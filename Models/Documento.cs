@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using CenterCopy.models;
 
 namespace CentroDeCopias.Models
@@ -19,5 +20,9 @@ namespace CentroDeCopias.Models
 
         // Relación 1 a N con Detalle_Pedido
         public ICollection<DetallePedido> DetallesPedido { get; set; } = new List<DetallePedido>();
+
+        // Archivo que sube el usuario
+        [NotMapped]
+        public IFormFile? Archivo { get; set; }
     }
 }
