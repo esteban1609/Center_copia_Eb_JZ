@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 namespace CenterCopy.models
 {
-    public class Pedidos
+    public class Pedido
     {
         [Key]
         public int id_pedido { get; set; }

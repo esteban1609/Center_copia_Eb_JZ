@@ -1,4 +1,6 @@
 
+using CenterCopy.models;
+using CentroDeCopias.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace TuProyecto.Models
