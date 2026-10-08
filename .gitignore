@@ -1,0 +1,47 @@
+## Carpetas de compilación
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Rider / JetBrains
+.idea/
+*.sln.iml
+
+## VS Code
+.vscode/
+
+## Archivos de configuración con datos sensibles
+appsettings.Development.json
+appsettings.Local.json
+*.pfx
+
+## Logs
+*.log
+logs/
+
+## NuGet
+*.nupkg
+**/packages/*
+!**/packages/build/
+
+## Publicación
+[Pp]ublish/
+*.publishsettings
+
+## Archivos de SO
+.DS_Store
+Thumbs.db
+
+## Archivos de pruebas
+TestResults/
+*.trx
+
+## Node (si el frontend usa npm, ej. para Bootstrap/JS)
+node_modules/
