@@ -5,6 +5,16 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+//Configurar el entity framework
+builder.Services.AddDbContext<DataContext>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(
+            builder.Configuration.GetConnectionString("DefaultConnection")
+        )
+    )
+);
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
