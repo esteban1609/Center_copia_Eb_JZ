@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\esteb\\OneDrive\\Desktop\\Center_copia_EB_JZ\\Center_copia_EB_JZ.csproj": {}
+    "C:\\Users\\esteb\\OneDrive\\Documentos\\GitHub\\Center_copia_Eb_JZ\\Center_copia_EB_JZ.csproj": {}
   },
   "projects": {
-    "C:\\Users\\esteb\\OneDrive\\Desktop\\Center_copia_EB_JZ\\Center_copia_EB_JZ.csproj": {
+    "C:\\Users\\esteb\\OneDrive\\Documentos\\GitHub\\Center_copia_Eb_JZ\\Center_copia_EB_JZ.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\esteb\\OneDrive\\Desktop\\Center_copia_EB_JZ\\Center_copia_EB_JZ.csproj",
+        "projectUniqueName": "C:\\Users\\esteb\\OneDrive\\Documentos\\GitHub\\Center_copia_Eb_JZ\\Center_copia_EB_JZ.csproj",
         "projectName": "Center_copia_EB_JZ",
-        "projectPath": "C:\\Users\\esteb\\OneDrive\\Desktop\\Center_copia_EB_JZ\\Center_copia_EB_JZ.csproj",
+        "projectPath": "C:\\Users\\esteb\\OneDrive\\Documentos\\GitHub\\Center_copia_Eb_JZ\\Center_copia_EB_JZ.csproj",
         "packagesPath": "C:\\Users\\esteb\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\esteb\\OneDrive\\Desktop\\Center_copia_EB_JZ\\obj\\",
+        "outputPath": "C:\\Users\\esteb\\OneDrive\\Documentos\\GitHub\\Center_copia_Eb_JZ\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\esteb\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -45,6 +45,18 @@
         "net10.0": {
           "framework": "net10.0",
           "targetAlias": "net10.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.2, )"
+            },
+            "Pomelo.EntityFrameworkCore.MySql": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
