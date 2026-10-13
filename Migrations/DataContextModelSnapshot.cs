@@ -85,6 +85,9 @@ namespace Center_copia_EB_JZ.Migrations
                     b.Property<DateTime>("FechaSubida")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int>("IdPedido")
+                        .HasColumnType("int");
+
                     b.Property<int>("IdUsuario")
                         .HasColumnType("int");
 
@@ -98,6 +101,8 @@ namespace Center_copia_EB_JZ.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("IdDocumento");
+
+                    b.HasIndex("IdPedido");
 
                     b.HasIndex("IdUsuario");
 
@@ -247,6 +252,12 @@ namespace Center_copia_EB_JZ.Migrations
 
             modelBuilder.Entity("CentroDeCopias.Models.Documento", b =>
                 {
+                    b.HasOne("CentroDeCopias.Models.Pedido", "pedido")
+                        .WithMany("Documentos")
+                        .HasForeignKey("IdPedido")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("CentroDeCopias.Models.Usuario", "Usuario")
                         .WithMany("Documentos")
                         .HasForeignKey("IdUsuario")
@@ -254,6 +265,8 @@ namespace Center_copia_EB_JZ.Migrations
                         .IsRequired();
 
                     b.Navigation("Usuario");
+
+                    b.Navigation("pedido");
                 });
 
             modelBuilder.Entity("CentroDeCopias.Models.Pedido", b =>
@@ -281,6 +294,11 @@ namespace Center_copia_EB_JZ.Migrations
             modelBuilder.Entity("CentroDeCopias.Models.Documento", b =>
                 {
                     b.Navigation("DetallesPedido");
+                });
+
+            modelBuilder.Entity("CentroDeCopias.Models.Pedido", b =>
+                {
+                    b.Navigation("Documentos");
                 });
 
             modelBuilder.Entity("CentroDeCopias.Models.Producto", b =>
