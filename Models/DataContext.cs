@@ -45,6 +45,12 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
         .WithMany()
         .HasForeignKey(d => d.id_pedido)
         .IsRequired();
+    
+    //pedido 1:N Documento
+    modelBuilder.Entity<Documento>()
+    .HasOne(d => d.pedido)
+    .WithMany(p => p.Documentos)
+    .HasForeignKey(d => d.IdPedido);
 
     // Producto 1:N DetallePedido
     modelBuilder.Entity<DetallePedido>()
@@ -76,6 +82,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
     // Propiedad solo para mostrar el nombre
     modelBuilder.Entity<Pedido>()
         .Ignore(p => p.nombreusuario);
+
 }
 
 

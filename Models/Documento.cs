@@ -16,6 +16,10 @@ namespace CentroDeCopias.Models
 
         public DateTime FechaSubida { get; set; } = DateTime.Now;
 
+        public int IdPedido{get; set; }
+
+        public Pedido pedido {get; set;} = null!;
+
         // FK hacia Usuarios
         public int IdUsuario { get; set; }
         public Usuario Usuario { get; set; }

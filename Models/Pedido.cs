@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Reflection.Metadata;
 namespace CentroDeCopias.Models
 {
     public class Pedido
@@ -23,5 +24,7 @@ namespace CentroDeCopias.Models
 
         [Required]
         public decimal total { get; set; }
+
+        public ICollection<Documento> Documentos { get; set; } = new List<Documento>();
     }
 }
