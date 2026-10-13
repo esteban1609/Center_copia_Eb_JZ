@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace CentroDeCopias.Models
 {
     public class Stock
     {
+        [Key]
         public int IdStock { get; set; }
 
         // FK hacia Producto (1 a 1)

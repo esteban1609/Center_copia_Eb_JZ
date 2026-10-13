@@ -1,11 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using CenterCopy.models;
+using CentroDeCopias.Models;
 
 namespace CentroDeCopias.Models
 {
     public class Documento
     {
+
+        [Key]
         public int IdDocumento { get; set; }
 
         [Required, MaxLength(150)]
@@ -24,5 +26,7 @@ namespace CentroDeCopias.Models
         // Archivo que sube el usuario
         [NotMapped]
         public IFormFile? Archivo { get; set; }
+
+        public string RutaArchivo { get; set; } = string.Empty;
     }
 }

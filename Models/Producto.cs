@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
-using CenterCopy.models;
+using CentroDeCopias.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CentroDeCopias.Models
 {
     public class Producto
     {
+        [Key]
         public int IdProducto { get; set; }
 
         [Required, MaxLength(100)]
@@ -13,7 +15,8 @@ namespace CentroDeCopias.Models
         [MaxLength(300)]
         public string? Descripcion { get; set; }
 
-        public double Precio { get; set; }
+        [Precision(12, 2)]
+        public decimal Precio { get; set; }
 
         [MaxLength(50)]
         public string? Categoria { get; set; }

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-namespace CenterCopy.models
+using Microsoft.EntityFrameworkCore;
+namespace CentroDeCopias.Models
 {
     public class DetallePedido
     {
@@ -10,11 +11,12 @@ namespace CenterCopy.models
 
         public int id_producto { get; set; }
 
-        public int id_documento { get; set; }
+        public int? id_documento { get; set; }
         [Required]
         public int cantidad { get; set; }
         [Required]
-        public double precio { get; set; }
+        [Precision(12, 2)]
+        public decimal precio { get; set; }
         [Required]
         public int copias { get; set; }
         [Required]
