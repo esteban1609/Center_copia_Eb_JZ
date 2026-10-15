@@ -29,3 +29,181 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+
+/* NAVBAR PRINCIPAL */
+
+.navbar-custom {
+    background-color: #172338;
+    padding: 14px 0;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+}
+
+.navbar-custom .navbar-brand {
+    color: white;
+    font-size: 1.4rem;
+    letter-spacing: 0.3px;
+}
+
+.navbar-logo {
+    font-size: 1.7rem;
+}
+
+.navbar-custom .nav-link {
+    color: #cbd5e1;
+    font-weight: 500;
+    margin: 0 8px;
+    transition: color 0.2s ease;
+}
+
+.navbar-custom .nav-link:hover {
+    color: #60a5fa;
+}
+
+.navbar-custom .nav-link.active {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.navbar-custom .navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.navbar-custom .navbar-toggler:focus {
+    box-shadow: 0 0 0 2px #60a5fa;
+}
+
+/* NAVBAR CENTER COPIA */
+
+.navbar-custom {
+    background: linear-gradient(90deg, #101b34, #203c67);
+    padding: 10px 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.18);
+}
+
+/* Logo */
+
+.logo-navbar {
+    width: 65px;
+    height: 65px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Nombre de la empresa */
+
+.nombre-empresa {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 1px;
+}
+
+/* Enlaces */
+
+.navbar-custom .nav-link {
+    color: #e2e8f0;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.navbar-custom .nav-link:hover {
+    color: #ff299c;
+}
+
+@media (max-width: 576px) {
+    .logo-navbar {
+        width: 50px;
+        height: 50px;
+    }
+
+    .nombre-empresa {
+        font-size: 1rem;
+    }
+}
+
+
+/* Navbar de una sola fila */
+.navbar-steam {
+    background: linear-gradient(90deg, #171d27, #203451);
+    min-height: 75px;
+    padding: 8px 0;
+}
+
+/* Logo a la izquierda */
+.logo-steam {
+    width: 55px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Enlaces */
+.navbar-steam .nav-link {
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.navbar-steam .nav-link:hover {
+    color: #48b8ff;
+}
+
+/* Campana y configuración */
+.icono-navbar {
+    color: #cbd5e1;
+    font-size: 20px;
+    border: none;
+    padding: 5px;
+}
+
+.icono-navbar:hover {
+    color: #48b8ff;
+}
+
+.icono-navbar:disabled {
+    color: #cbd5e1;
+    opacity: 0.7;
+}
+
+/* Perfil */
+.perfil-boton {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    border: none;
+}
+
+.perfil-boton:hover,
+.perfil-boton:focus {
+    color: #48b8ff;
+    background-color: #2a3b52;
+}
+
+.avatar-navbar {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #40516b;
+    border-radius: 5px;
+}
+
+.perfil-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.perfil-info strong {
+    font-size: 13px;
+}
+
+.perfil-info small {
+    font-size: 11px;
+    color: #a8b8cc;
+}

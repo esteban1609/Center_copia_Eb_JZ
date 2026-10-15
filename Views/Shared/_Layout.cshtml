@@ -12,36 +12,123 @@
 </head>
 
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Center_copia_EB_JZ</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home"
-                                asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Productos"
-                                asp-action="Index">Productos</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Usuario"
-                                asp-action="Index">Usuarios</a>
-                        </li>
-                    </ul>
+
+
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-steam">
+        <div class="container-fluid px-3">
+
+            <!-- Logo -->
+            <a class="navbar-brand me-4"
+               asp-controller="Home"
+               asp-action="Index">
+                <img src="~/images/logo-centercopia.jpeg"
+                     alt="Center Copia"
+                     class="logo-steam" />
+            </a>
+
+            <!-- Botón para celulares -->
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#menuPrincipal"
+                    aria-controls="menuPrincipal"
+                    aria-expanded="false"
+                    aria-label="Abrir menú">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse"
+                 id="menuPrincipal">
+
+                <!-- Enlaces a la izquierda -->
+                <ul class="navbar-nav me-auto gap-lg-3">
+
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           asp-controller="Home"
+                           asp-action="Index">
+                            INICIO
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           asp-controller="Productos"
+                           asp-action="Index">
+                            PRODUCTOS
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           asp-controller="Usuario"
+                           asp-action="Index">
+                            USUARIOS
+                        </a>
+                    </li>
+
+                </ul>
+
+                <!-- Notificaciones, configuración y perfil -->
+                <div class="d-flex align-items-center gap-3">
+
+                    <button type="button"
+                            class="btn icono-navbar"
+                            title="Notificaciones"
+                            disabled>
+                        🔔
+                    </button>
+
+                    <button type="button"
+                            class="btn icono-navbar"
+                            title="Configuración"
+                            disabled>
+                        ⚙️
+                    </button>
+
+                    <div class="dropdown">
+
+                        <button class="btn perfil-boton dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+
+                            <span class="avatar-navbar">
+                                👤
+                            </span>
+
+                            <span class="perfil-info">
+                                <strong>Mi perfil</strong>
+                                <small>Invitado</small>
+                            </span>
+
+                        </button>
+
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <span class="dropdown-item-text">
+                                    No has iniciado sesión
+                                </span>
+                            </li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li>
+                                <span class="dropdown-item-text text-muted">
+                                    Iniciar sesión (próximamente)
+                                </span>
+                            </li>
+                        </ul>
+
+                    </div>
+
                 </div>
+
             </div>
-        </nav>
-    </header>
+        </div>
+    </nav>
+</header>
+
+
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
