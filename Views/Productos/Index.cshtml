@@ -1,0 +1,159 @@
+
+@model IEnumerable<CentroDeCopias.Models.Producto>
+
+@{
+    ViewData["Title"] = "Productos";
+}
+
+<div class="container mt-4">
+
+    <h2>Listado de Productos</h2>
+
+    <a asp-action="Create" class="btn btn-primary mb-3">
+        Nuevo Producto
+    </a>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Categoría</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var producto in Model)
+            {
+                <tr>
+                    <td>@producto.Nombre</td>
+                    <td>@producto.Descripcion</td>
+                    <td>@producto.Precio.ToString("N2")</td>
+                    <td>@producto.Categoria</td>
+
+                    <!-- Estado del producto -->
+                    <td>
+                        @if (producto.activo)
+                        {
+                            <span class="badge bg-success">Activo</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Inactivo</span>
+                        }
+                    </td>
+
+                    <!-- Acciones -->
+                    <td>
+                        <a asp-action="Edit"
+                           asp-route-id="@producto.IdProducto"
+                           class="btn btn-warning btn-sm">
+                            Editar
+                        </a>
+
+                        @if (producto.activo)
+                        {
+                            <button type="button"
+                                    class="btn btn-danger btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalDesactivar-@producto.IdProducto">
+                                Desactivar
+                            </button>
+                        }
+                        else
+                        {
+                            <form asp-action="Reactivar"
+                                  asp-route-id="@producto.IdProducto"
+                                  method="post"
+                                  class="d-inline">
+
+                                <button type="submit"
+                                        class="btn btn-success btn-sm">
+                                    Reactivar
+                                </button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Ventanas modales para desactivar productos -->
+    @foreach (var producto in Model.Where(p => p.activo))
+    {
+        <div class="modal fade"
+             id="modalDesactivar-@producto.IdProducto"
+             tabindex="-1"
+             aria-labelledby="tituloModal-@producto.IdProducto"
+             aria-hidden="true">
+
+            <div class="modal-dialog modal-dialog-centered">
+
+                <div class="modal-content">
+
+                    <!-- Encabezado -->
+                    <div class="modal-header">
+
+                        <h5 class="modal-title"
+                            id="tituloModal-@producto.IdProducto">
+                            Confirmar baja de producto
+                        </h5>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Cerrar">
+                        </button>
+
+                    </div>
+
+                    <!-- Mensaje -->
+                    <div class="modal-body">
+
+                        <p>
+                            ¿Estás seguro de que deseas desactivar
+                            el producto
+                            <strong>@producto.Nombre</strong>?
+                        </p>
+
+                        <p class="text-muted">
+                            El producto permanecerá registrado
+                            en la base de datos y podrá
+                            reactivarse posteriormente.
+                        </p>
+
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="modal-footer">
+
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+
+                        <form asp-action="Desactivar"
+                              asp-route-id="@producto.IdProducto"
+                              method="post"
+                              class="d-inline">
+
+                            <button type="submit"
+                                    class="btn btn-danger">
+                                Confirmar baja
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+
+</div>

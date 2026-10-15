@@ -21,6 +21,9 @@ namespace CentroDeCopias.Models
         [MaxLength(50)]
         public string? Categoria { get; set; }
 
+        //baja logica
+        public bool activo {get;set;}=true;
+
         // Relación 1 a 1 con Stock
         public Stock? Stock { get; set; }
 
