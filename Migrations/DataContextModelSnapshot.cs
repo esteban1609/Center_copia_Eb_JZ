@@ -30,6 +30,15 @@ namespace Center_copia_EB_JZ.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id_detalle"));
 
+                    b.Property<int?>("DocumentoIdDocumento")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Pedidoid_pedido")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProductoIdProducto")
+                        .HasColumnType("int");
+
                     b.Property<string>("anillado")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -64,6 +73,12 @@ namespace Center_copia_EB_JZ.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("id_detalle");
+
+                    b.HasIndex("DocumentoIdDocumento");
+
+                    b.HasIndex("Pedidoid_pedido");
+
+                    b.HasIndex("ProductoIdProducto");
 
                     b.HasIndex("id_documento");
 
@@ -213,6 +228,9 @@ namespace Center_copia_EB_JZ.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<bool>("activo")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("apellido")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -236,6 +254,18 @@ namespace Center_copia_EB_JZ.Migrations
 
             modelBuilder.Entity("CentroDeCopias.Models.DetallePedido", b =>
                 {
+                    b.HasOne("CentroDeCopias.Models.Documento", "Documento")
+                        .WithMany()
+                        .HasForeignKey("DocumentoIdDocumento");
+
+                    b.HasOne("CentroDeCopias.Models.Pedido", null)
+                        .WithMany("Detalles")
+                        .HasForeignKey("Pedidoid_pedido");
+
+                    b.HasOne("CentroDeCopias.Models.Producto", "Producto")
+                        .WithMany()
+                        .HasForeignKey("ProductoIdProducto");
+
                     b.HasOne("CentroDeCopias.Models.Documento", null)
                         .WithMany("DetallesPedido")
                         .HasForeignKey("id_documento");
@@ -251,6 +281,10 @@ namespace Center_copia_EB_JZ.Migrations
                         .HasForeignKey("id_producto")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Documento");
+
+                    b.Navigation("Producto");
                 });
 
             modelBuilder.Entity("CentroDeCopias.Models.Documento", b =>
@@ -301,6 +335,8 @@ namespace Center_copia_EB_JZ.Migrations
 
             modelBuilder.Entity("CentroDeCopias.Models.Pedido", b =>
                 {
+                    b.Navigation("Detalles");
+
                     b.Navigation("Documentos");
                 });
 

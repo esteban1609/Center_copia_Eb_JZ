@@ -1,0 +1,154 @@
+@model IEnumerable<CentroDeCopias.Models.Usuario>
+
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<div class="container mt-4">
+
+    <h2>Listado de Usuarios</h2>
+
+    <a asp-action="Create" class="btn btn-primary mb-3">
+        Nuevo Usuario
+    </a>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var usuario in Model)
+            {
+                <tr>
+                    <td>@usuario.nombre</td>
+                    <td>@usuario.apellido</td>
+                    <td>@usuario.email</td>
+                    <td>@usuario.Rol</td>
+
+                    <td>
+                        @if (usuario.activo)
+                        {
+                            <span class="badge bg-success">
+                                Activo
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                Inactivo
+                            </span>
+                        }
+                    </td>
+
+                    <td>
+                        <a asp-action="Edit"
+                           asp-route-id="@usuario.id_Usuario"
+                           class="btn btn-warning btn-sm">
+                            Editar
+                        </a>
+
+                        @if (usuario.activo)
+                        {
+                            <button type="button"
+                                    class="btn btn-danger btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalDesactivar-@usuario.id_Usuario">
+                                Desactivar
+                            </button>
+                        }
+                        else
+                        {
+                            <form asp-action="Reactivar"
+                                  asp-route-id="@usuario.id_Usuario"
+                                  method="post"
+                                  class="d-inline">
+
+                                <button type="submit"
+                                        class="btn btn-success btn-sm">
+                                    Reactivar
+                                </button>
+
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @foreach (var usuario in Model.Where(u => u.activo))
+    {
+        <div class="modal fade"
+             id="modalDesactivar-@usuario.id_Usuario"
+             tabindex="-1"
+             aria-labelledby="tituloModal-@usuario.id_Usuario"
+             aria-hidden="true">
+
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title"
+                            id="tituloModal-@usuario.id_Usuario">
+                            Confirmar baja de usuario
+                        </h5>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Cerrar">
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <p>
+                            ¿Estás seguro de que deseas desactivar
+                            al usuario
+                            <strong>
+                                @usuario.nombre @usuario.apellido
+                            </strong>?
+                        </p>
+
+                        <p class="text-muted">
+                            El usuario permanecerá registrado
+                            en la base de datos y podrá
+                            reactivarse posteriormente.
+                        </p>
+
+                    </div>
+
+                    <div class="modal-footer">
+
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+
+                        <form asp-action="Desactivar"
+                              asp-route-id="@usuario.id_Usuario"
+                              method="post">
+
+                            <button type="submit"
+                                    class="btn btn-danger">
+                                Confirmar baja
+                            </button>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>

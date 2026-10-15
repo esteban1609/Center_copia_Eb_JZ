@@ -1,0 +1,101 @@
+@model CentroDeCopias.Models.Usuario
+
+@{
+    ViewData["Title"] = "Editar Usuario";
+}
+
+<div class="container mt-4">
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+
+                    <h3 class="mb-4">Editar Usuario</h3>
+
+                    <form asp-action="Edit"
+                          asp-route-id="@Model.id_Usuario"
+                          method="post">
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="nombre"
+                                   class="form-label"></label>
+
+                            <input asp-for="nombre"
+                                   class="form-control" />
+
+                            <span asp-validation-for="nombre"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="apellido"
+                                   class="form-label"></label>
+
+                            <input asp-for="apellido"
+                                   class="form-control" />
+
+                            <span asp-validation-for="apellido"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="email"
+                                   class="form-label"></label>
+
+                            <input asp-for="email"
+                                   type="email"
+                                   class="form-control" />
+
+                            <span asp-validation-for="email"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Rol"
+                                   class="form-label"></label>
+
+                            <select asp-for="Rol"
+                                    class="form-select">
+
+                                <option value="Cliente">Cliente</option>
+                                <option value="Escuela">Escuela</option>
+                                <option value="Admin">Administrador</option>
+
+                            </select>
+
+                            <span asp-validation-for="Rol"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex gap-2">
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                Guardar Cambios
+                            </button>
+
+                            <a asp-action="Index"
+                               class="btn btn-secondary">
+                                Cancelar
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
