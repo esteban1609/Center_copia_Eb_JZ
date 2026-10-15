@@ -1,0 +1,26 @@
+@model CentroDeCopias.Models.Stock
+
+@{
+    ViewData["Title"] = "Detalle de stock";
+}
+
+<h1>Detalle de stock</h1>
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-3">Producto</dt>
+        <dd class="col-sm-9">@Model.Producto.Nombre</dd>
+
+        <dt class="col-sm-3">Cantidad disponible</dt>
+        <dd class="col-sm-9">@Model.CantidadDisponible</dd>
+
+        <dt class="col-sm-3">Stock mínimo</dt>
+        <dd class="col-sm-9">@Model.StockMinimo</dd>
+
+        <dt class="col-sm-3">Última actualización</dt>
+        <dd class="col-sm-9">@Model.UltimaActualizacion.ToString("dd/MM/yyyy HH:mm")</dd>
+    </dl>
+</div>
+
+<a asp-action="Edit" asp-route-id="@Model.IdStock">Editar</a> |
+<a asp-action="Index">Volver a la lista</a>

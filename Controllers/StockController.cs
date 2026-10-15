@@ -96,30 +96,6 @@ namespace CentroDeCopias.Controllers
             return View(stock);
         }
 
-        // GET: Stock/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null) return NotFound();
 
-            var stock = await _context.Stocks
-                .Include(s => s.Producto)
-                .FirstOrDefaultAsync(s => s.IdStock == id);
-
-            if (stock == null) return NotFound();
-
-            return View(stock);
-        }
-
-        // POST: Stock/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var stock = await _context.Stocks.FindAsync(id);
-            if (stock != null) _context.Stocks.Remove(stock);
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
     }
 }

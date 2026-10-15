@@ -1,0 +1,28 @@
+@model CentroDeCopias.Models.Pedido
+
+@{
+    ViewData["Title"] = "Eliminar pedido";
+}
+
+<h1>Eliminar pedido</h1>
+
+<h3>¿Seguro que querés eliminar este pedido?</h3>
+<dl class="row">
+    <dt class="col-sm-3">Usuario</dt>
+    <dd class="col-sm-9">@Model.Usuario.nombre @Model.Usuario.apellido</dd>
+
+    <dt class="col-sm-3">Fecha</dt>
+    <dd class="col-sm-9">@Model.fecha.ToString("dd/MM/yyyy")</dd>
+
+    <dt class="col-sm-3">Estado</dt>
+    <dd class="col-sm-9">@Model.estado</dd>
+
+    <dt class="col-sm-3">Total</dt>
+    <dd class="col-sm-9">@Model.total.ToString("C")</dd>
+</dl>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="id_pedido" />
+    <input type="submit" value="Eliminar" class="btn btn-danger" /> |
+    <a asp-action="Index">Cancelar</a>
+</form>

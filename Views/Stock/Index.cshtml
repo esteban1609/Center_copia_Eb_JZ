@@ -1,0 +1,37 @@
+@model IEnumerable<CentroDeCopias.Models.Stock>
+
+@{
+    ViewData["Title"] = "Stock";
+}
+
+<h1>Stock</h1>
+
+<p>
+    <a asp-action="Create">Nuevo registro de stock</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad disponible</th>
+            <th>Stock mínimo</th>
+            <th>Última actualización</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr class="@(item.CantidadDisponible <= item.StockMinimo ? "table-danger" : "")">
+            <td>@item.Producto.Nombre</td>
+            <td>@item.CantidadDisponible</td>
+            <td>@item.StockMinimo</td>
+            <td>@item.UltimaActualizacion.ToString("dd/MM/yyyy HH:mm")</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdStock">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.IdStock">Detalles</a> |
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,0 +1,54 @@
+@model CentroDeCopias.Models.Pedido
+
+@{
+    ViewData["Title"] = "Detalle del pedido";
+}
+
+<h1>Pedido #@Model.id_pedido</h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Usuario</dt>
+    <dd class="col-sm-9">@Model.Usuario.nombre @Model.Usuario.apellido</dd>
+
+    <dt class="col-sm-3">Fecha</dt>
+    <dd class="col-sm-9">@Model.fecha.ToString("dd/MM/yyyy HH:mm")</dd>
+
+    <dt class="col-sm-3">Estado</dt>
+    <dd class="col-sm-9">@Model.estado</dd>
+
+    <dt class="col-sm-3">Total</dt>
+    <dd class="col-sm-9">@Model.total.ToString("C")</dd>
+</dl>
+
+<h3>Detalle de líneas</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tipo</th>
+            <th>Descripción</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+            <th>Opciones de impresión</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var d in Model.Detalles)
+    {
+        <tr>
+            <td>@(d.id_producto != null ? "Producto" : "Documento")</td>
+            <td>@(d.id_producto != null ? d.Producto.Nombre : d.Documento.Nombre)</td>
+            <td>@d.cantidad</td>
+            <td>@d.precio.ToString("C")</td>
+            <td>
+                @if (d.id_documento != null)
+                {
+                    @($"{d.copias} copias, {(d.color ? "color" : "B/N")}, {(d.doble_faz ? "doble faz" : "una faz")}, {d.tamano_hoja}, {d.anillado}")
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<a asp-action="Edit" asp-route-id="@Model.id_pedido">Editar</a> |
+<a asp-action="Index">Volver a la lista</a>

@@ -1,0 +1,28 @@
+@model CentroDeCopias.Models.Stock
+
+@{
+    ViewData["Title"] = "Nuevo stock";
+}
+
+<h1>Nuevo stock</h1>
+
+<form asp-action="Create">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="IdProducto" class="control-label">Producto</label>
+        <select asp-for="IdProducto" class="form-control" asp-items="ViewBag.IdProducto"></select>
+    </div>
+    <div class="form-group">
+        <label asp-for="CantidadDisponible" class="control-label"></label>
+        <input asp-for="CantidadDisponible" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="StockMinimo" class="control-label"></label>
+        <input asp-for="StockMinimo" class="form-control" />
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Guardar" class="btn btn-primary" />
+    </div>
+</form>
+
+<a asp-action="Index">Volver a la lista</a>
