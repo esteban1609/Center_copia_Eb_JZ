@@ -10,8 +10,11 @@ namespace CentroDeCopias.Models
         public int id_pedido { get; set; }
 
         public int id_producto { get; set; }
+        public Producto? Producto { get; set; }
 
         public int? id_documento { get; set; }
+        public Documento? Documento { get; set; }
+       
         [Required]
         public int cantidad { get; set; }
         [Required]

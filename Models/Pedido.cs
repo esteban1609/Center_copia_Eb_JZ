@@ -26,5 +26,7 @@ namespace CentroDeCopias.Models
         public decimal total { get; set; }
 
         public ICollection<Documento> Documentos { get; set; } = new List<Documento>();
+        public ICollection<DetallePedido> Detalles { get; set; } = new List<DetallePedido>();
+
     }
 }
