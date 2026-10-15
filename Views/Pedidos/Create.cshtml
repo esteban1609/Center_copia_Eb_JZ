@@ -1,0 +1,24 @@
+@model CentroDeCopias.Models.Pedido
+
+@{
+    ViewData["Title"] = "Nuevo pedido";
+}
+
+<h1>Nuevo pedido</h1>
+
+<form asp-action="Create">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for= "id_Usuario" class="control-label">Usuario</label>
+        <select asp-for="id_Usuario" class="form-control" asp-items="ViewBag.IdUsuario"></select>
+    </div>
+    <div class="form-group">
+        <label asp-for="estado" class="control-label"></label>
+        <input asp-for="estado" class="form-control" />
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Guardar" class="btn btn-primary" />
+    </div>
+</form>
+
+<a asp-action="Index">Volver a la lista</a>

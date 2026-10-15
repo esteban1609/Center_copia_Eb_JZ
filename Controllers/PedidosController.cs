@@ -109,6 +109,13 @@ namespace CentroDeCopias.Controllers
 
             if (pedido == null) return NotFound();
 
+            // Solo se puede eliminar si está Pendiente
+            if (pedido.estado != "Pendiente")
+            {
+                TempData["Error"] = "Solo se pueden eliminar pedidos en estado Pendiente. Para los demás, cambiá el estado a Cancelado.";
+                return RedirectToAction(nameof(Index));
+            }
+
             return View(pedido);
         }
 
@@ -118,10 +125,20 @@ namespace CentroDeCopias.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var pedido = await _context.Pedidos.FindAsync(id);
-            if (pedido != null) _context.Pedidos.Remove(pedido);
 
+            if (pedido == null) return NotFound();
+
+            if (pedido.estado != "Pendiente")
+            {
+                TempData["Error"] = "Solo se pueden eliminar pedidos en estado Pendiente.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            _context.Pedidos.Remove(pedido);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+    
+
     }
 }

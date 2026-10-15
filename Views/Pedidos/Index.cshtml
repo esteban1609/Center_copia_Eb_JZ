@@ -1,0 +1,46 @@
+@model IEnumerable<CentroDeCopias.Models.Pedido>
+
+@{
+    ViewData["Title"] = "Pedidos";
+}
+
+<h1>Pedidos</h1>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<p>
+    <a asp-action="Create">Nuevo pedido</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Usuario</th>
+            <th>Estado</th>
+            <th>Total</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.fecha.ToString("dd/MM/yyyy")</td>
+            <td>@item.Usuario.nombre</td>
+            <td>@item.estado</td>
+            <td>@item.total.ToString("C")</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.id_pedido">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.id_pedido">Detalles</a> |
+                @if (item.estado == "Pendiente")
+                {
+                    <a asp-action="Delete" asp-route-id="@item.id_pedido">Eliminar</a>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
