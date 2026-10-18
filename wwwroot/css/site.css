@@ -207,3 +207,22 @@ body {
     font-size: 11px;
     color: #a8b8cc;
 }
+
+
+/* Botón de registro */
+
+.btn-registro {
+    background-color: #1a9fff;
+    color: white;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 15px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-registro:hover {
+    background-color: #47b7ff;
+    color: white;
+}

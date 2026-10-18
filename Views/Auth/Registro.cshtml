@@ -1,0 +1,96 @@
+
+@model CentroDeCopias.Models.Usuario
+
+@{
+    ViewData["Title"] = "Registro";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+
+            <div class="card shadow border-0">
+                <div class="card-body p-4">
+
+                    <h3 class="text-center mb-4">
+                        Crear cuenta
+                    </h3>
+
+                    <form asp-controller="Auth"
+                          asp-action="Registro"
+                          method="post">
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="nombre"
+                                   class="form-label"></label>
+                            <input asp-for="nombre"
+                                   class="form-control" />
+                            <span asp-validation-for="nombre"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="apellido"
+                                   class="form-label"></label>
+                            <input asp-for="apellido"
+                                   class="form-control" />
+                            <span asp-validation-for="apellido"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="email"
+                                   class="form-label"></label>
+                            <input asp-for="email"
+                                   type="email"
+                                   class="form-control" />
+                            <span asp-validation-for="email"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="contrasena"
+                                   class="form-label"></label>
+                            <input asp-for="contrasena"
+                                   type="password"
+                                   class="form-control" />
+                            <span asp-validation-for="contrasena"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Rol"
+                                   class="form-label">
+                                Tipo de cuenta
+                            </label>
+
+                            <select asp-for="Rol"
+                                    class="form-select">
+                                <option value="Cliente">Cliente</option>
+                                <option value="Escuela">Escuela</option>
+                            </select>
+
+                            <span asp-validation-for="Rol"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <button type="submit"
+                                class="btn btn-primary w-100">
+                            Registrarse
+                        </button>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
