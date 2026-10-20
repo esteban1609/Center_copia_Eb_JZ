@@ -1,9 +1,11 @@
+
 using Microsoft.EntityFrameworkCore;
 using CentroDeCopias.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//Configurar el entity framework
+// Configurar Entity Framework
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -13,24 +15,44 @@ builder.Services.AddDbContext<DataContext>(options =>
     )
 );
 
-// Add services to the container.
+// Agregar MVC
 builder.Services.AddControllersWithViews();
+
+// Configurar autenticación por Cookies
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Auth/Login";
+        options.AccessDeniedPath = "/Auth/AccesoDenegado";
+
+        options.Cookie.Name = "CenterCopia.Auth";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.SlidingExpiration = true;
+    });
+
+// Configurar autorización
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-
-
-// Configure the HTTP request pipeline.
+// Configurar HTTP
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+
 app.UseRouting();
 
+// Primero autenticación, después autorización
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -39,6 +61,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();

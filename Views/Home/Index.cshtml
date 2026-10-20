@@ -1,8 +1,15 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@if (User.Identity?.IsAuthenticated == true)
+{
+    <h4>Bienvenido, @User.Identity.Name</h4>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+    <p>
+        Rol:
+        @User.FindFirst(
+            System.Security.Claims.ClaimTypes.Role
+        )?.Value
+    </p>
+}
+else
+{
+    <p>No hay ningún usuario autenticado.</p>
+}

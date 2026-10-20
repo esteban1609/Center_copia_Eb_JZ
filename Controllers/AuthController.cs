@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using CentroDeCopias.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 
 namespace CentroDeCopias.Controllers
 {
@@ -132,10 +135,71 @@ namespace CentroDeCopias.Controllers
                 return View(datos);
             }
 
-            // Credenciales correctas
-            // Próximamente generaremos el JWT
+            // Crear las Claims del usuario
+            var claims = new List<Claim>
+{
+    new Claim(
+        ClaimTypes.NameIdentifier,
+        usuario.id_Usuario.ToString()
+    ),
+
+    new Claim(
+        ClaimTypes.Name,
+        usuario.nombre + " " + usuario.apellido
+    ),
+
+    new Claim(
+        ClaimTypes.Email,
+        usuario.email
+    ),
+
+    new Claim(
+        ClaimTypes.Role,
+        usuario.Rol
+    ),
+
+    new Claim(
+        "Avatar",
+        usuario.Avatar ?? ""
+    )
+};
+
+            // Crear la identidad
+            var identidad = new ClaimsIdentity(
+                claims,
+                CookieAuthenticationDefaults.AuthenticationScheme
+            );
+
+            // Crear el principal
+            var principal = new ClaimsPrincipal(identidad);
+
+            // Iniciar sesión
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                principal
+            );
 
             return RedirectToAction("Index", "Home");
         }
+
+        // POST: Auth/Logout
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme
+            );
+
+            return RedirectToAction("Login", "Auth");
+        }
+
+        // GET: Auth/AccesoDenegado
+        [HttpGet]
+        public IActionResult AccesoDenegado()
+        {
+            return View();
+        }
     }
+
 }
