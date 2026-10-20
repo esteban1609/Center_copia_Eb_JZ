@@ -1,16 +1,18 @@
-﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>@ViewData["Title"] - Center Copia</title>
 
     <script type="importmap"></script>
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
     <link rel="stylesheet" href="~/Center_copia_EB_JZ.styles.css" asp-append-version="true" />
 </head>
 
@@ -18,57 +20,49 @@
 
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark navbar-steam">
+
             <div class="container-fluid px-3">
 
-                <!-- Logo -->
-                <a class="navbar-brand me-4"
-                   asp-controller="Home"
-                   asp-action="Index">
+                <!-- LOGO -->
+                <a class="navbar-brand me-4" asp-controller="Home" asp-action="Index">
 
-                    <img src="~/images/logo-centercopia.jpeg"
-                         alt="Center Copia"
-                         class="logo-steam" />
+                    <img src="~/images/logo-centercopia.jpeg" alt="Center Copia" class="logo-steam" />
                 </a>
 
-                <!-- Botón para celulares -->
-                <button class="navbar-toggler"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#menuPrincipal"
-                        aria-controls="menuPrincipal"
-                        aria-expanded="false"
-                        aria-label="Abrir menú">
+                <!-- BOTÓN PARA CELULARES -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal"
+                    aria-controls="menuPrincipal" aria-expanded="false" aria-label="Abrir menú">
 
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="menuPrincipal">
 
-                    <!-- Enlaces a la izquierda -->
+                    <!-- ENLACES A LA IZQUIERDA -->
                     <ul class="navbar-nav me-auto gap-lg-3">
 
+                        <!-- INICIO -->
                         <li class="nav-item">
-                            <a class="nav-link"
-                               asp-controller="Home"
-                               asp-action="Index">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">
+
                                 INICIO
                             </a>
                         </li>
 
+                        <!-- PRODUCTOS -->
                         <li class="nav-item">
-                            <a class="nav-link"
-                               asp-controller="Productos"
-                               asp-action="Index">
+                            <a class="nav-link" asp-controller="Productos" asp-action="Index">
+
                                 PRODUCTOS
                             </a>
                         </li>
 
+                        <!-- USUARIOS: SOLO ADMIN -->
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link"
-                                   asp-controller="Usuario"
-                                   asp-action="Index">
+                                <a class="nav-link" asp-controller="Usuario" asp-action="Index">
+
                                     USUARIOS
                                 </a>
                             </li>
@@ -76,55 +70,69 @@
 
                     </ul>
 
-                    <!-- Notificaciones, configuración y perfil -->
+                    <!-- ELEMENTOS DE LA DERECHA -->
                     <div class="d-flex align-items-center gap-3">
 
-                        <button type="button"
-                                class="btn icono-navbar"
-                                title="Notificaciones"
-                                disabled>
+                        <!-- NOTIFICACIONES -->
+                        <button type="button" class="btn icono-navbar" title="Notificaciones" disabled>
+
                             🔔
                         </button>
 
-                        <button type="button"
-                                class="btn icono-navbar"
-                                title="Configuración"
-                                disabled>
+                        <!-- CONFIGURACIÓN -->
+                        <button type="button" class="btn icono-navbar" title="Configuración" disabled>
+
                             ⚙️
                         </button>
 
+                        <!-- REGISTRO PARA INVITADOS -->
                         @if (User.Identity?.IsAuthenticated != true)
                         {
-                            <a asp-controller="Auth"
-                               asp-action="Registro"
-                               class="btn btn-registro">
+                            <a asp-controller="Auth" asp-action="Registro" class="btn btn-registro">
+
                                 Registrarse
                             </a>
                         }
 
+                        <!-- MENÚ DE PERFIL -->
                         <div class="dropdown">
 
-                            <button class="btn perfil-boton dropdown-toggle"
-                                    type="button"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-
+                            <button class="btn perfil-boton dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <!-- AVATAR -->
                                 <span class="avatar-navbar">
-                                    👤
+
+                                    @{
+                                        var avatar = User.FindFirst("Avatar")?.Value;
+                                    }
+
+                                    @if (User.Identity?.IsAuthenticated == true &&
+                                                                        !string.IsNullOrEmpty(avatar))
+                                    {
+                                        <img src="@avatar" alt="Foto de perfil" class="foto-navbar" />
+                                    }
+                                    else
+                                    {
+                                        <span>👤</span>
+                                    }
+
                                 </span>
 
+                                <!-- INFORMACIÓN DEL USUARIO -->
                                 <span class="perfil-info">
 
                                     @if (User.Identity?.IsAuthenticated == true)
                                     {
-                                        <strong>@User.Identity.Name</strong>
+                                        <strong>
+                                            @User.Identity.Name
+                                        </strong>
 
                                         <small>
                                             @User.FindFirst(
-                                                System.Security.Claims.ClaimTypes.Role
-                                            )?.Value
-                                        </small>
-                                    }
+                                            System.Security.Claims.ClaimTypes.Role
+                                                                                )?.Value
+                                    </small>
+                                                                        }
                                     else
                                     {
                                         <strong>Mi perfil</strong>
@@ -132,14 +140,17 @@
                                     }
 
                                 </span>
+
                             </button>
 
+                            <!-- OPCIONES DESPLEGABLES -->
                             <ul class="dropdown-menu dropdown-menu-end">
 
                                 @if (User.Identity?.IsAuthenticated == true)
                                 {
+                                    <!-- NOMBRE DEL USUARIO -->
                                     <li>
-                                        <span class="dropdown-item-text">
+                                        <span class="dropdown-item-text fw-bold">
                                             @User.Identity.Name
                                         </span>
                                     </li>
@@ -148,13 +159,26 @@
                                         <hr class="dropdown-divider" />
                                     </li>
 
+                                    <!-- MI PERFIL -->
                                     <li>
-                                        <form asp-controller="Auth"
-                                              asp-action="Logout"
-                                              method="post">
+                                        <a class="dropdown-item" asp-controller="Perfil" asp-action="Index">
 
-                                            <button type="submit"
-                                                    class="dropdown-item">
+                                            👤 Mi perfil
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <hr class="dropdown-divider" />
+                                    </li>
+
+                                    <!-- CERRAR SESIÓN -->
+                                    <li>
+                                        <form asp-controller="Auth" asp-action="Logout" method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit" class="dropdown-item">
+
                                                 Cerrar sesión
                                             </button>
 
@@ -163,10 +187,10 @@
                                 }
                                 else
                                 {
+                                    <!-- INICIAR SESIÓN -->
                                     <li>
-                                        <a class="dropdown-item"
-                                           asp-controller="Auth"
-                                           asp-action="Login">
+                                        <a class="dropdown-item" asp-controller="Auth" asp-action="Login">
+
                                             Iniciar sesión
                                         </a>
                                     </li>
@@ -175,10 +199,10 @@
                                         <hr class="dropdown-divider" />
                                     </li>
 
+                                    <!-- REGISTRARSE -->
                                     <li>
-                                        <a class="dropdown-item"
-                                           asp-controller="Auth"
-                                           asp-action="Registro">
+                                        <a class="dropdown-item" asp-controller="Auth" asp-action="Registro">
+
                                             Registrarse
                                         </a>
                                     </li>
@@ -195,28 +219,38 @@
         </nav>
     </header>
 
-    <div class="container">
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="container-fluid px-3 px-lg-5">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
+    <!-- FOOTER -->
     <footer class="border-top footer text-muted">
+
         <div class="container">
+
             &copy; 2026 - Center Copia -
-            <a asp-area=""
-               asp-controller="Home"
-               asp-action="Privacy">
+
+            <a asp-area="" asp-controller="Home" asp-action="Privacy">
+
                 Privacy
             </a>
+
         </div>
+
     </footer>
 
+    <!-- SCRIPTS -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>
+
 </html>
