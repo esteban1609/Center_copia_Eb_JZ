@@ -39,21 +39,8 @@ namespace Center_copia_EB_JZ.Migrations
                     b.Property<int?>("ProductoIdProducto")
                         .HasColumnType("int");
 
-                    b.Property<string>("anillado")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<int>("cantidad")
                         .HasColumnType("int");
-
-                    b.Property<bool>("color")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<int>("copias")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("doble_faz")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<int?>("id_documento")
                         .HasColumnType("int");
@@ -67,10 +54,6 @@ namespace Center_copia_EB_JZ.Migrations
                     b.Property<decimal>("precio")
                         .HasPrecision(12, 2)
                         .HasColumnType("decimal(12,2)");
-
-                    b.Property<string>("tamano_hoja")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.HasKey("id_detalle");
 
@@ -97,6 +80,19 @@ namespace Center_copia_EB_JZ.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("IdDocumento"));
 
+                    b.Property<string>("Anillado")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("Color")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("Copias")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("DobleFaz")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<DateTime>("FechaSubida")
                         .HasColumnType("datetime(6)");
 
@@ -111,7 +107,14 @@ namespace Center_copia_EB_JZ.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
+                    b.Property<double>("Precio")
+                        .HasColumnType("double");
+
                     b.Property<string>("RutaArchivo")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("TamanoHoja")
                         .IsRequired()
                         .HasColumnType("longtext");
 
