@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CentroDeCopias.Models;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CentroDeCopias.Controllers
 {
@@ -41,65 +42,83 @@ namespace CentroDeCopias.Controllers
         }
 
         // GET: Pedidos/Create
+        [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.IdUsuario = new SelectList(_context.Usuarios, "IdUsuario", "Nombre");
             return View();
         }
 
         // POST: Pedidos/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdUsuario,Estado")] Pedido pedido)
+        public async Task<IActionResult> create()
         {
-            if (ModelState.IsValid)
+            // Si ya tiene un pedido pendiente, lo reutiliza en vez de crear uno nuevo
+            var pedidoExistente = await _context.Pedidos
+                .FirstOrDefaultAsync(p => p.id_Usuario == UsuarioActualId && p.estado == "Pendiente");
+
+            if (pedidoExistente != null)
             {
-                pedido.fecha = DateTime.Now;
-                pedido.total = 0; // se recalcula cuando se cargan los detalles
-                _context.Add(pedido);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                TempData["Mensaje"] = "Ya tenías un pedido pendiente, lo retomamos.";
+                return RedirectToAction(nameof(Details), new { id = pedidoExistente.id_pedido });
             }
-            ViewBag.IdUsuario = new SelectList(_context.Usuarios, "IdUsuario", "Nombre", pedido.id_Usuario);
-            return View(pedido);
-        }
 
-        // GET: Pedidos/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null) return NotFound();
-
-            var pedido = await _context.Pedidos.FindAsync(id);
-            if (pedido == null) return NotFound();
-
-            ViewBag.IdUsuario = new SelectList(_context.Usuarios, "IdUsuario", "Nombre", pedido.id_Usuario);
-            return View(pedido);
-        }
-
-        // POST: Pedidos/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPedido,IdUsuario,Estado,Fecha,Total")] Pedido pedido)
-        {
-            if (id != pedido.id_pedido) return NotFound();
-
-            if (ModelState.IsValid)
+            var pedido = new Pedido
             {
-                try
-                {
-                    _context.Update(pedido);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_context.Pedidos.Any(e => e.id_pedido == pedido.id_pedido)) return NotFound();
-                    else throw;
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewBag.IdUsuario = new SelectList(_context.Usuarios, "IdUsuario", "Nombre", pedido.id_Usuario);
+                id_Usuario = UsuarioActualId,
+                fecha = DateTime.Now,
+                estado = "Pendiente",
+                total = 0
+            };
+
+            _context.Pedidos.Add(pedido);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), new { id = pedido.id_pedido });
+        }
+
+        private static readonly string[] EstadosValidos =
+{
+    "Pendiente", "Confirmado", "En impresión", "Listo para retirar", "Entregado", "Cancelado"
+};
+
+    // GET: Pedidos/Edit/5
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Edit(int? id)
+    {
+        if (id == null) return NotFound();
+
+        var pedido = await _context.Pedidos
+            .Include(p => p.Usuario)
+            .FirstOrDefaultAsync(p => p.id_pedido == id);
+
+        if (pedido == null) return NotFound();
+
+        ViewBag.Estados = new SelectList(EstadosValidos, pedido.estado);
+        return View(pedido);
+    }
+
+    // POST: Pedidos/Edit/5
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, string estado)
+    {
+        var pedido = await _context.Pedidos.FindAsync(id);
+        if (pedido == null) return NotFound();
+
+        if (!EstadosValidos.Contains(estado))
+        {
+            ModelState.AddModelError("", "Estado no válido");
+            ViewBag.Estados = new SelectList(EstadosValidos, pedido.estado);
             return View(pedido);
         }
+
+        pedido.estado = estado;
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Details), new { id });
+    }
 
         // GET: Pedidos/Delete/5
         public async Task<IActionResult> Delete(int? id)
