@@ -86,5 +86,11 @@ else
     </table>
 }
 
+@if (Model.estado == "Pendiente")
+{
+    <form asp-action="Confirmar" asp-route-id="@Model.id_pedido" method="post" style="display:inline">
+        <input type="submit" value="Confirmar pedido" class="btn btn-success" />
+    </form>
+}
 <a asp-action="Edit" asp-route-id="@Model.id_pedido">Editar</a> |
 <a asp-action="Index">Volver a la lista</a>

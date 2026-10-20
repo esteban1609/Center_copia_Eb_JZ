@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CentroDeCopias.Models;
+using System.Security.Claims;
 
 namespace CentroDeCopias.Controllers
 {
@@ -13,6 +14,8 @@ namespace CentroDeCopias.Controllers
         {
             _context = context;
         }
+        private int UsuarioActualId =>
+        int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
         // GET: Pedidos
         public async Task<IActionResult> Index()
@@ -137,6 +140,41 @@ namespace CentroDeCopias.Controllers
             _context.Pedidos.Remove(pedido);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+        
+
+        // POST: Pedidos/Confirmar/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Confirmar(int id)
+        {
+            var pedido = await _context.Pedidos
+                .Include(p => p.Documentos)
+                .Include(p => p.Detalles)
+                .FirstOrDefaultAsync(p => p.id_pedido == id);
+
+            if (pedido == null) return NotFound();
+
+            // Solo el dueño del pedido puede confirmarlo
+            if (pedido.id_Usuario != UsuarioActualId) return Forbid();
+
+            if (pedido.estado != "Pendiente")
+            {
+                TempData["Error"] = "Este pedido ya fue confirmado o no está disponible.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            if (!pedido.Documentos.Any() && !pedido.Detalles.Any())
+            {
+                TempData["Error"] = "No podés confirmar un pedido vacío.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            pedido.estado = "Confirmado";
+            await _context.SaveChangesAsync();
+
+            TempData["Mensaje"] = "Pedido confirmado correctamente.";
+            return RedirectToAction(nameof(Details), new { id });
         }
     
 
