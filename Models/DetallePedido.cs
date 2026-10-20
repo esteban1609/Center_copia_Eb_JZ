@@ -20,16 +20,8 @@ namespace CentroDeCopias.Models
         [Required]
         [Precision(12, 2)]
         public decimal precio { get; set; }
-        [Required]
-        public int copias { get; set; }
-        [Required]
-        public bool color { get; set; }
-        [Required]
-        public bool doble_faz { get; set; }
-        [Required]
-        public string tamano_hoja { get; set; }
-        [Required]
-        public string anillado { get; set; }
+
+    
     }
     
 }

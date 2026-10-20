@@ -28,8 +28,8 @@ namespace CentroDeCopias.Controllers
 
             var pedido = await _context.Pedidos
                 .Include(p => p.Usuario)
+                .Include(p => p.Documentos)
                 .Include(p => p.Detalles).ThenInclude(d => d.Producto)
-                .Include(p => p.Detalles).ThenInclude(d => d.Documento)
                 .FirstOrDefaultAsync(p => p.id_pedido == id);
 
             if (pedido == null) return NotFound();

@@ -20,35 +20,71 @@
     <dd class="col-sm-9">@Model.total.ToString("C")</dd>
 </dl>
 
-<h3>Detalle de líneas</h3>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Tipo</th>
-            <th>Descripción</th>
-            <th>Cantidad</th>
-            <th>Precio</th>
-            <th>Opciones de impresión</th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var d in Model.Detalles)
-    {
-        <tr>
-            <td>@(d.id_producto != null ? "Producto" : "Documento")</td>
-            <td>@(d.id_producto != null ? d.Producto.Nombre : d.Documento.Nombre)</td>
-            <td>@d.cantidad</td>
-            <td>@d.precio.ToString("C")</td>
-            <td>
-                @if (d.id_documento != null)
-                {
-                    @($"{d.copias} copias, {(d.color ? "color" : "B/N")}, {(d.doble_faz ? "doble faz" : "una faz")}, {d.tamano_hoja}, {d.anillado}")
-                }
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+<h3>Documentos para imprimir</h3>
+@if (!Model.Documentos.Any())
+{
+    <p><em>No hay documentos cargados en este pedido.</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Copias</th>
+                <th>Color</th>
+                <th>Doble faz</th>
+                <th>Tamaño</th>
+                <th>Anillado</th>
+                <th>Precio</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var d in Model.Documentos)
+        {
+            <tr>
+                <td>@d.Nombre</td>
+                <td>@d.Copias</td>
+                <td>@(d.Color ? "Sí" : "No")</td>
+                <td>@(d.DobleFaz ? "Sí" : "No")</td>
+                <td>@d.TamanoHoja</td>
+                <td>@d.Anillado</td>
+                <td>@d.Precio.ToString("C")</td>
+                <td><a href="@d.RutaArchivo" target="_blank">Ver PDF</a></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+<h3>Productos</h3>
+@if (!Model.Detalles.Any())
+{
+    <p><em>No hay productos cargados en este pedido.</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var d in Model.Detalles)
+        {
+            <tr>
+                <td>@d.Producto.Nombre</td>
+                <td>@d.cantidad</td>
+                <td>@d.precio.ToString("C")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
 
 <a asp-action="Edit" asp-route-id="@Model.id_pedido">Editar</a> |
 <a asp-action="Index">Volver a la lista</a>

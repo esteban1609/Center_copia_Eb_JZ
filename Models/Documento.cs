@@ -32,5 +32,12 @@ namespace CentroDeCopias.Models
         public IFormFile? Archivo { get; set; }
 
         public string RutaArchivo { get; set; } = string.Empty;
+
+        public int Copias { get; set; } = 1;
+        public bool Color { get; set; }
+        public bool DobleFaz { get; set; }
+        public string TamanoHoja { get; set; } = "A4";
+        public string Anillado { get; set; } = "Ninguno";
+        public double Precio { get; set; }
     }
 }

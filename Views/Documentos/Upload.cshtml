@@ -1,0 +1,50 @@
+@{
+    ViewData["Title"] = "Subir documento para imprimir";
+}
+
+<h1>Subir documento para imprimir</h1>
+
+<form asp-action="Upload" enctype="multipart/form-data">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group">
+        <label>Nombre del documento</label>
+        <input type="text" name="nombre" class="form-control" placeholder="Opcional" />
+    </div>
+    <div class="form-group">
+        <label>Archivo PDF</label>
+        <input type="file" name="archivo" accept="application/pdf" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Cantidad de copias</label>
+        <input type="number" name="copias" min="1" value="1" class="form-control" />
+    </div>
+    <div class="form-check">
+        <input type="checkbox" name="color" value="true" class="form-check-input" />
+        <label class="form-check-label">Color (si no, blanco y negro)</label>
+    </div>
+    <div class="form-check">
+        <input type="checkbox" name="dobleFaz" value="true" class="form-check-input" />
+        <label class="form-check-label">Doble faz</label>
+    </div>
+    <div class="form-group">
+        <label>Tamaño de hoja</label>
+        <select name="tamanoHoja" class="form-control">
+            <option value="A4">A4</option>
+            <option value="Oficio">Oficio</option>
+            <option value="Carta">Carta</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Anillado</label>
+        <select name="anillado" class="form-control">
+            <option value="Ninguno">Ninguno</option>
+            <option value="Simple">Simple</option>
+            <option value="Doble">Doble</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Agregar al pedido" class="btn btn-primary" />
+    </div>
+</form>
