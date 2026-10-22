@@ -1,50 +1,284 @@
+
 @{
     ViewData["Title"] = "Subir documento para imprimir";
 }
 
-<h1>Subir documento para imprimir</h1>
+<div class="container py-4 py-lg-5"
+     style="max-width: 950px;">
 
-<form asp-action="Upload" enctype="multipart/form-data">
-    <div asp-validation-summary="All" class="text-danger"></div>
+    <!-- ENCABEZADO -->
+    <div class="mb-4">
 
-    <div class="form-group">
-        <label>Nombre del documento</label>
-        <input type="text" name="nombre" class="form-control" placeholder="Opcional" />
-    </div>
-    <div class="form-group">
-        <label>Archivo PDF</label>
-        <input type="file" name="archivo" accept="application/pdf" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label>Cantidad de copias</label>
-        <input type="number" name="copias" min="1" value="1" class="form-control" />
-    </div>
-    <div class="form-check">
-        <input type="checkbox" name="color" value="true" class="form-check-input" />
-        <label class="form-check-label">Color (si no, blanco y negro)</label>
-    </div>
-    <div class="form-check">
-        <input type="checkbox" name="dobleFaz" value="true" class="form-check-input" />
-        <label class="form-check-label">Doble faz</label>
-    </div>
-    <div class="form-group">
-        <label>Tamaño de hoja</label>
-        <select name="tamanoHoja" class="form-control">
-            <option value="A4">A4</option>
-            <option value="Oficio">Oficio</option>
-            <option value="Carta">Carta</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label>Anillado</label>
-        <select name="anillado" class="form-control">
-            <option value="Ninguno">Ninguno</option>
-            <option value="Simple">Simple</option>
-            <option value="Doble">Doble</option>
-        </select>
+        <h2 class="fw-bold mb-2">
+            Subir documento para imprimir
+        </h2>
+
+        <p class="text-muted">
+            Seleccioná tu archivo y configurá
+            las opciones de impresión.
+        </p>
+
     </div>
 
-    <div class="form-group">
-        <input type="submit" value="Agregar al pedido" class="btn btn-primary" />
+    <!-- TARJETA PRINCIPAL -->
+    <div class="card shadow-sm border-0 rounded-4">
+
+        <div class="card-body p-4 p-lg-5">
+
+            <form asp-controller="Documentos"
+                  asp-action="Upload"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="All"
+                     class="text-danger mb-3">
+                </div>
+
+                <!-- INFORMACIÓN DEL DOCUMENTO -->
+                <div class="mb-4">
+
+                    <h5 class="fw-bold mb-3">
+                        Información del documento
+                    </h5>
+
+                    <div class="mb-4">
+
+                        <label for="nombre"
+                               class="form-label fw-semibold">
+                            Nombre del documento
+                        </label>
+
+                        <input type="text"
+                               id="nombre"
+                               name="nombre"
+                               class="form-control"
+                               placeholder="Ej. Trabajo práctico de Matemática" />
+
+                        <div class="form-text">
+                            Opcional. Podés asignarle un nombre
+                            para identificarlo.
+                        </div>
+
+                    </div>
+
+                    <!-- ARCHIVO PDF -->
+                    <div class="mb-3">
+
+                        <label for="archivo"
+                               class="form-label fw-semibold">
+                            Archivo PDF
+                        </label>
+
+                        <div class="border rounded-3 p-4 bg-light">
+
+                            <div class="text-center mb-3">
+
+                                <div class="fs-1 mb-2">
+                                    📄
+                                </div>
+
+                                <h6 class="fw-bold">
+                                    Seleccioná tu documento
+                                </h6>
+
+                                <p class="text-muted small mb-0">
+                                    Formato permitido: PDF
+                                </p>
+
+                            </div>
+
+                            <input type="file"
+                                   id="archivo"
+                                   name="archivo"
+                                   accept=".pdf,application/pdf"
+                                   class="form-control"
+                                   required />
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <hr class="my-4" />
+
+                <!-- OPCIONES DE IMPRESIÓN -->
+                <div class="mb-4">
+
+                    <h5 class="fw-bold mb-2">
+                        Opciones de impresión
+                    </h5>
+
+                    <p class="text-muted small mb-4">
+                        Personalizá cómo querés imprimir
+                        tu documento.
+                    </p>
+
+                    <div class="row g-4">
+
+                        <!-- COPIAS -->
+                        <div class="col-md-6">
+
+                            <label for="copias"
+                                   class="form-label fw-semibold">
+                                Cantidad de copias
+                            </label>
+
+                            <input type="number"
+                                   id="copias"
+                                   name="copias"
+                                   min="1"
+                                   value="1"
+                                   class="form-control"
+                                   required />
+
+                        </div>
+
+                        <!-- TAMAÑO DE HOJA -->
+                        <div class="col-md-6">
+
+                            <label for="tamanoHoja"
+                                   class="form-label fw-semibold">
+                                Tamaño de hoja
+                            </label>
+
+                            <select id="tamanoHoja"
+                                    name="tamanoHoja"
+                                    class="form-select">
+
+                                <option value="A4">
+                                    A4
+                                </option>
+
+                                <option value="Oficio">
+                                    Oficio
+                                </option>
+
+                                <option value="Carta">
+                                    Carta
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <!-- COLOR -->
+                        <div class="col-md-6">
+
+                            <div class="border rounded-3 p-3 h-100">
+
+                                <div class="form-check">
+
+                                    <input type="checkbox"
+                                           id="color"
+                                           name="color"
+                                           value="true"
+                                           class="form-check-input" />
+
+                                    <label for="color"
+                                           class="form-check-label fw-semibold">
+                                        Impresión a color
+                                    </label>
+
+                                </div>
+
+                                <p class="text-muted small mb-0 mt-2">
+                                    Si no seleccionás esta opción,
+                                    se imprimirá en blanco y negro.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <!-- DOBLE FAZ -->
+                        <div class="col-md-6">
+
+                            <div class="border rounded-3 p-3 h-100">
+
+                                <div class="form-check">
+
+                                    <input type="checkbox"
+                                           id="dobleFaz"
+                                           name="dobleFaz"
+                                           value="true"
+                                           class="form-check-input" />
+
+                                    <label for="dobleFaz"
+                                           class="form-check-label fw-semibold">
+                                        Impresión doble faz
+                                    </label>
+
+                                </div>
+
+                                <p class="text-muted small mb-0 mt-2">
+                                    Imprimir en ambas caras
+                                    de la hoja.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <!-- ANILLADO -->
+                        <div class="col-12">
+
+                            <label for="anillado"
+                                   class="form-label fw-semibold">
+                                Tipo de anillado
+                            </label>
+
+                            <select id="anillado"
+                                    name="anillado"
+                                    class="form-select">
+
+                                <option value="Ninguno">
+                                    Sin anillado
+                                </option>
+
+                                <option value="Simple">
+                                    Anillado simple
+                                </option>
+
+                                <option value="Doble">
+                                    Anillado doble
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <hr class="my-4" />
+
+                <!-- BOTONES -->
+                <div class="d-flex justify-content-end
+                            gap-2 flex-wrap">
+
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary px-4">
+                        Cancelar
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-primary px-4">
+
+                        Agregar al pedido
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
     </div>
-</form>
+
+</div>
