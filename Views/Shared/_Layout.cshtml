@@ -57,12 +57,34 @@
                             </a>
                         </li>
 
-                        <!-- USUARIOS: SOLO ADMIN -->
+                        <!-- DOCUMENTOS -->
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Documentos" asp-action="Upload">
+                                DOCUMENTOS
+                            </a>
+                        </li>
+
+                        <!-- PEDIDOS -->
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Pedidos" asp-action="Index">
+                                PEDIDOS
+                            </a>
+                        </li>
+
+                        <!-- USUARIOS, STOCK: SOLO ADMIN -->
                         @if (User.IsInRole("Admin"))
                         {
+
+                            <!-- STOCK -->
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Stock" asp-action="Index">
+                                    STOCK
+                                </a>
+                            </li>
+
+                            <!-- Usuarios -->
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Usuario" asp-action="Index">
-
                                     USUARIOS
                                 </a>
                             </li>

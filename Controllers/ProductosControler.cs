@@ -15,13 +15,26 @@ namespace CentroDeCopias.Controllers
             _context = context;
         }
 
-        // GET: /Productos
+
+
+        // GET: Productos
         public async Task<IActionResult> Index()
         {
-            var productos = await _context.Productos.ToListAsync();
+            var productos = await _context.Productos
+                .AsNoTracking()
+                .OrderBy(p => p.Nombre)
+                .ToListAsync();
+
+            // Contadores
+            ViewBag.TotalProductos = productos.Count;
+
+            ViewBag.ProductosActivos = productos.Count(p => p.activo);
+
+            ViewBag.ProductosInactivos = productos.Count(p => !p.activo);
 
             return View(productos);
         }
+
 
         // GET: /Productos/Create
         public IActionResult Create()

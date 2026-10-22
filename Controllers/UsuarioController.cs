@@ -2,9 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CentroDeCopias.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CentroDeCopias.Controllers
 {
+
+    [Authorize(Roles = "Admin")]
     public class UsuarioController : Controller
     {
         private readonly DataContext _context;
@@ -18,12 +21,21 @@ namespace CentroDeCopias.Controllers
         public async Task<IActionResult> Index()
         {
             var usuarios = await _context.Usuarios
+                .AsNoTracking()
                 .OrderBy(u => u.apellido)
                 .ThenBy(u => u.nombre)
                 .ToListAsync();
 
+            // Contadores
+            ViewBag.TotalUsuarios = usuarios.Count;
+
+            ViewBag.UsuariosActivos = usuarios.Count(u => u.activo);
+
+            ViewBag.UsuariosInactivos = usuarios.Count(u => !u.activo);
+
             return View(usuarios);
         }
+
 
 
         // GET: Usuarios/Create

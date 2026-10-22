@@ -5,84 +5,247 @@
     ViewData["Title"] = "Productos";
 }
 
-<div class="container mt-4">
+<div class="container py-4 py-lg-5"
+     style="max-width: 1250px;">
 
-    <h2>Listado de Productos</h2>
+    <!-- ENCABEZADO -->
+    <div class="d-flex justify-content-between
+                align-items-center flex-wrap gap-3 mb-4">
 
-    <a asp-action="Create" class="btn btn-primary mb-3">
-        Nuevo Producto
-    </a>
+        <div>
+            <h2 class="fw-bold mb-2">
+                Gestión de productos
+            </h2>
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Precio</th>
-                <th>Categoría</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
+            <p class="text-muted mb-0">
+                Administrá los productos disponibles
+                en Center Copia.
+            </p>
+        </div>
 
-        <tbody>
-            @foreach (var producto in Model)
-            {
-                <tr>
-                    <td>@producto.Nombre</td>
-                    <td>@producto.Descripcion</td>
-                    <td>@producto.Precio.ToString("N2")</td>
-                    <td>@producto.Categoria</td>
+        <a asp-action="Create"
+           class="btn btn-primary px-4">
 
-                    <!-- Estado del producto -->
-                    <td>
-                        @if (producto.activo)
+            + Nuevo producto
+        </a>
+
+    </div>
+
+    <!-- TARJETAS DE RESUMEN -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+
+                    <p class="text-muted mb-2">
+                        Total de productos
+                    </p>
+
+                    <h3 class="fw-bold mb-0">
+                        @ViewBag.TotalProductos
+                    </h3>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+
+                    <p class="text-muted mb-2">
+                        Productos activos
+                    </p>
+
+                    <h3 class="fw-bold text-success mb-0">
+                        @ViewBag.ProductosActivos
+                    </h3>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+
+                    <p class="text-muted mb-2">
+                        Productos inactivos
+                    </p>
+
+                    <h3 class="fw-bold text-danger mb-0">
+                        @ViewBag.ProductosInactivos
+                    </h3>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- LISTADO -->
+    <div class="card border-0 shadow-sm rounded-4">
+
+        <div class="card-body p-4">
+
+            <div class="d-flex justify-content-between
+                        align-items-center flex-wrap gap-2 mb-4">
+
+                <h5 class="fw-bold mb-0">
+                    Listado de productos
+                </h5>
+
+                <span class="text-muted small">
+                    @ViewBag.TotalProductos registros
+                </span>
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th class="py-3">Producto</th>
+                            <th class="py-3">Descripción</th>
+                            <th class="py-3">Precio</th>
+                            <th class="py-3">Categoría</th>
+                            <th class="py-3">Estado</th>
+                            <th class="py-3 text-end">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (!Model.Any())
                         {
-                            <span class="badge bg-success">Activo</span>
+                            <tr>
+                                <td colspan="6"
+                                    class="text-center py-5">
+
+                                    <div class="fs-1 mb-2">
+                                        📦
+                                    </div>
+
+                                    <h6 class="fw-bold">
+                                        No hay productos registrados
+                                    </h6>
+
+                                    <p class="text-muted mb-0">
+                                        Agregá un producto para
+                                        comenzar.
+                                    </p>
+
+                                </td>
+                            </tr>
                         }
                         else
                         {
-                            <span class="badge bg-danger">Inactivo</span>
+                            @foreach (var producto in Model)
+                            {
+                                <tr>
+
+                                    <!-- NOMBRE -->
+                                    <td class="fw-semibold">
+                                        @producto.Nombre
+                                    </td>
+
+                                    <!-- DESCRIPCIÓN -->
+                                    <td class="text-muted">
+                                        @producto.Descripcion
+                                    </td>
+
+                                    <!-- PRECIO -->
+                                    <td class="fw-semibold">
+                                        $ @producto.Precio.ToString("N2")
+                                    </td>
+
+                                    <!-- CATEGORÍA -->
+                                    <td>
+                                        <span class="badge bg-light
+                                                     text-dark border">
+                                            @producto.Categoria
+                                        </span>
+                                    </td>
+
+                                    <!-- ESTADO -->
+                                    <td>
+                                        @if (producto.activo)
+                                        {
+                                            <span class="badge bg-success">
+                                                Activo
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">
+                                                Inactivo
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <!-- ACCIONES -->
+                                    <td class="text-end">
+
+                                        <div class="d-flex
+                                                    justify-content-end
+                                                    gap-2">
+
+                                            <a asp-action="Edit"
+                                               asp-route-id="@producto.IdProducto"
+                                               class="btn btn-outline-primary btn-sm">
+
+                                                Editar
+                                            </a>
+
+                                            @if (producto.activo)
+                                            {
+                                                <button type="button"
+                                                        class="btn btn-outline-danger btn-sm"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalDesactivar-@producto.IdProducto">
+
+                                                    Desactivar
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <form asp-action="Reactivar"
+                                                      asp-route-id="@producto.IdProducto"
+                                                      method="post">
+
+                                                    @Html.AntiForgeryToken()
+
+                                                    <button type="submit"
+                                                            class="btn btn-outline-success btn-sm">
+
+                                                        Reactivar
+                                                    </button>
+
+                                                </form>
+                                            }
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+                            }
                         }
-                    </td>
 
-                    <!-- Acciones -->
-                    <td>
-                        <a asp-action="Edit"
-                           asp-route-id="@producto.IdProducto"
-                           class="btn btn-warning btn-sm">
-                            Editar
-                        </a>
+                    </tbody>
 
-                        @if (producto.activo)
-                        {
-                            <button type="button"
-                                    class="btn btn-danger btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalDesactivar-@producto.IdProducto">
-                                Desactivar
-                            </button>
-                        }
-                        else
-                        {
-                            <form asp-action="Reactivar"
-                                  asp-route-id="@producto.IdProducto"
-                                  method="post"
-                                  class="d-inline">
+                </table>
 
-                                <button type="submit"
-                                        class="btn btn-success btn-sm">
-                                    Reactivar
-                                </button>
-                            </form>
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+            </div>
 
-    <!-- Ventanas modales para desactivar productos -->
+        </div>
+
+    </div>
+
+    <!-- MODALES DE CONFIRMACIÓN -->
     @foreach (var producto in Model.Where(p => p.activo))
     {
         <div class="modal fade"
@@ -93,14 +256,15 @@
 
             <div class="modal-dialog modal-dialog-centered">
 
-                <div class="modal-content">
+                <div class="modal-content border-0 rounded-4 shadow">
 
-                    <!-- Encabezado -->
-                    <div class="modal-header">
+                    <!-- ENCABEZADO -->
+                    <div class="modal-header border-0 pb-0">
 
-                        <h5 class="modal-title"
+                        <h5 class="modal-title fw-bold"
                             id="tituloModal-@producto.IdProducto">
-                            Confirmar baja de producto
+
+                            Desactivar producto
                         </h5>
 
                         <button type="button"
@@ -111,40 +275,45 @@
 
                     </div>
 
-                    <!-- Mensaje -->
-                    <div class="modal-body">
+                    <!-- MENSAJE -->
+                    <div class="modal-body py-4">
 
                         <p>
-                            ¿Estás seguro de que deseas desactivar
+                            ¿Estás seguro de que querés desactivar
                             el producto
                             <strong>@producto.Nombre</strong>?
                         </p>
 
-                        <p class="text-muted">
+                        <div class="alert alert-warning mb-0">
+
                             El producto permanecerá registrado
-                            en la base de datos y podrá
-                            reactivarse posteriormente.
-                        </p>
+                            en la base de datos y podrás
+                            reactivarlo cuando quieras.
+
+                        </div>
 
                     </div>
 
-                    <!-- Botones -->
-                    <div class="modal-footer">
+                    <!-- BOTONES -->
+                    <div class="modal-footer border-0 pt-0">
 
                         <button type="button"
-                                class="btn btn-secondary"
+                                class="btn btn-outline-secondary"
                                 data-bs-dismiss="modal">
+
                             Cancelar
                         </button>
 
                         <form asp-action="Desactivar"
                               asp-route-id="@producto.IdProducto"
-                              method="post"
-                              class="d-inline">
+                              method="post">
+
+                            @Html.AntiForgeryToken()
 
                             <button type="submit"
                                     class="btn btn-danger">
-                                Confirmar baja
+
+                                Confirmar desactivación
                             </button>
 
                         </form>
@@ -152,6 +321,7 @@
                     </div>
 
                 </div>
+
             </div>
         </div>
     }
