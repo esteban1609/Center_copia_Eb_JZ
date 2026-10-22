@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using CentroDeCopias.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +21,10 @@ namespace CentroDeCopias.Models
 
         [MaxLength(50)]
         public string? Categoria { get; set; }
-
+        public string? RutaImagen { get; set; }
+        
+        [NotMapped]
+        public IFormFile? Imagen {get; set;}
         //baja logica
         public bool activo {get;set;}=true;
 

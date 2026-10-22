@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Admin\\Documents\\ULP\\Lab 2\\Center_copia_Eb_JZ\\Center_copia_EB_JZ.csproj": {}
+    "C:\\Users\\esteb\\OneDrive\\Documentos\\GitHub\\Center_copia_Eb_JZ\\Center_copia_EB_JZ.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Admin\\Documents\\ULP\\Lab 2\\Center_copia_Eb_JZ\\Center_copia_EB_JZ.csproj": {
+    "C:\\Users\\esteb\\OneDrive\\Documentos\\GitHub\\Center_copia_Eb_JZ\\Center_copia_EB_JZ.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Admin\\Documents\\ULP\\Lab 2\\Center_copia_Eb_JZ\\Center_copia_EB_JZ.csproj",
+        "projectUniqueName": "C:\\Users\\esteb\\OneDrive\\Documentos\\GitHub\\Center_copia_Eb_JZ\\Center_copia_EB_JZ.csproj",
         "projectName": "Center_copia_EB_JZ",
-        "projectPath": "C:\\Users\\Admin\\Documents\\ULP\\Lab 2\\Center_copia_Eb_JZ\\Center_copia_EB_JZ.csproj",
-        "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Admin\\Documents\\ULP\\Lab 2\\Center_copia_Eb_JZ\\obj\\",
+        "projectPath": "C:\\Users\\esteb\\OneDrive\\Documentos\\GitHub\\Center_copia_Eb_JZ\\Center_copia_EB_JZ.csproj",
+        "packagesPath": "C:\\Users\\esteb\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\esteb\\OneDrive\\Documentos\\GitHub\\Center_copia_Eb_JZ\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\esteb\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"

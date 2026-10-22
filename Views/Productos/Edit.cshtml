@@ -1,72 +1,46 @@
-
 @model CentroDeCopias.Models.Producto
 
 @{
-    ViewData["Title"] = "Editar Producto";
+    ViewData["Title"] = "Editar producto";
 }
 
-<div class="container mt-4">
+<h1>Editar producto</h1>
 
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
+<form asp-action="Edit" enctype="multipart/form-data">
+    <input type="hidden" asp-for="IdProducto" />
+    <input type="hidden" asp-for="RutaImagen" />
+    <div asp-validation-summary="All" class="text-danger"></div>
 
-            <div class="card shadow-sm">
-                <div class="card-body p-4">
-
-                    <h3 class="mb-4">Editar Producto</h3>
-
-                    <form asp-action="Edit"
-                          asp-route-id="@Model.IdProducto"
-                          method="post">
-
-                        <input type="hidden" asp-for="IdProducto" />
-
-                        <div asp-validation-summary="ModelOnly"
-                             class="text-danger"></div>
-
-                        <div class="mb-3">
-                            <label asp-for="Nombre" class="form-label"></label>
-                            <input asp-for="Nombre" class="form-control" />
-                            <span asp-validation-for="Nombre"
-                                  class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Descripcion" class="form-label"></label>
-                            <textarea asp-for="Descripcion"
-                                      class="form-control"></textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Precio" class="form-label"></label>
-                            <input asp-for="Precio" class="form-control" />
-                            <span asp-validation-for="Precio"
-                                  class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Categoria" class="form-label"></label>
-                            <input asp-for="Categoria" class="form-control" />
-                        </div>
-
-                        <button type="submit" class="btn btn-success">
-                            Guardar Cambios
-                        </button>
-
-                        <a asp-action="Index" class="btn btn-secondary">
-                            Cancelar
-                        </a>
-
-                    </form>
-
-                </div>
-            </div>
-
+    @if (!string.IsNullOrEmpty(Model.RutaImagen))
+    {
+        <div class="mb-3">
+            <img src="@Model.RutaImagen" alt="@Model.Nombre" style="max-height: 150px;" />
         </div>
+    }
+
+    <div class="form-group">
+        <label asp-for="Nombre" class="control-label"></label>
+        <input asp-for="Nombre" class="form-control" />
     </div>
+    <div class="form-group">
+        <label asp-for="Descripcion" class="control-label"></label>
+        <textarea asp-for="Descripcion" class="form-control"></textarea>
+    </div>
+    <div class="form-group">
+        <label asp-for="Precio" class="control-label"></label>
+        <input asp-for="Precio" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Categoria" class="control-label"></label>
+        <input asp-for="Categoria" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Cambiar imagen (opcional)</label>
+        <input asp-for="Imagen" type="file" accept="image/*" class="form-control" />
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Guardar" class="btn btn-primary" />
+    </div>
+</form>
 
-</div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+<a asp-action="Index">Volver a la lista</a>

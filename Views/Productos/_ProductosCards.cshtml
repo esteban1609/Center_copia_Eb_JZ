@@ -1,0 +1,29 @@
+@model IEnumerable<CentroDeCopias.Models.Producto>
+
+<div class="row">
+    @if (!Model.Any())
+    {
+        <p class="text-muted">No se encontraron productos.</p>
+    }
+    @foreach (var p in Model)
+    {
+        <div class="col-6 col-md-4 col-lg-3 mb-4">
+            <div class="card h-100">
+                <img src="@(string.IsNullOrEmpty(p.RutaImagen) ? "/images/productos/sin-imagen.png" : p.RutaImagen)"
+                     class="card-img-top" alt="@p.Nombre" style="height: 180px; object-fit: cover;" />
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">@p.Nombre</h5>
+                    <p class="card-text text-muted small">@p.Categoria</p>
+                    <p class="card-text">@p.Precio.ToString("C")</p>
+                    <a asp-controller="Pedidos" asp-action="AgregarProducto" asp-route-id="@p.IdProducto"
+                       class="btn btn-primary mt-auto">Agregar al pedido</a>
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@p.IdProducto" class="btn btn-outline-secondary btn-sm mt-2">Editar</a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

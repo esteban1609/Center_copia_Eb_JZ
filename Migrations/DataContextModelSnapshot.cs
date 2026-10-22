@@ -180,6 +180,9 @@ namespace Center_copia_EB_JZ.Migrations
                         .HasPrecision(12, 2)
                         .HasColumnType("decimal(12,2)");
 
+                    b.Property<string>("RutaImagen")
+                        .HasColumnType("longtext");
+
                     b.Property<bool>("activo")
                         .HasColumnType("tinyint(1)");
 
