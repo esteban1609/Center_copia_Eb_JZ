@@ -1,14 +1,14 @@
-using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace CentroDeCopias.Models
 {
     public class Stock
     {
-        [Key]
         public int IdStock { get; set; }
 
-        // FK hacia Producto (1 a 1)
         public int IdProducto { get; set; }
+
+        [ValidateNever]
         public Producto Producto { get; set; }
 
         public int CantidadDisponible { get; set; }
