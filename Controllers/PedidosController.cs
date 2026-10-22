@@ -82,21 +82,22 @@ namespace CentroDeCopias.Controllers
     "Pendiente", "Confirmado", "En impresión", "Listo para retirar", "Entregado", "Cancelado"
 };
 
-    // GET: Pedidos/Edit/5
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null) return NotFound();
+        // GET: Pedidos/Edit/5
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
 
-        var pedido = await _context.Pedidos
-            .Include(p => p.Usuario)
-            .FirstOrDefaultAsync(p => p.id_pedido == id);
+            var pedido = await _context.Pedidos
+                .Include(p => p.Usuario)
+                .FirstOrDefaultAsync(p => p.id_pedido == id);
 
-        if (pedido == null) return NotFound();
+            if (pedido == null) return NotFound();
 
-        ViewBag.Estados = new SelectList(EstadosValidos, pedido.estado);
-        return View(pedido);
-    }
+            ViewBag.Estados = new SelectList(EstadosValidos, pedido.estado);
+            return View(pedido);
+        }
+
 
     // POST: Pedidos/Edit/5
     [HttpPost]
@@ -105,20 +106,65 @@ namespace CentroDeCopias.Controllers
     public async Task<IActionResult> Edit(int id, string estado)
     {
         var pedido = await _context.Pedidos.FindAsync(id);
-        if (pedido == null) return NotFound();
 
+        if (pedido == null)
+            return NotFound();
+
+        // Validar que el estado sea correcto
         if (!EstadosValidos.Contains(estado))
         {
             ModelState.AddModelError("", "Estado no válido");
-            ViewBag.Estados = new SelectList(EstadosValidos, pedido.estado);
+
+            ViewBag.Estados = new SelectList(
+                EstadosValidos, pedido.estado);
+
             return View(pedido);
         }
 
-        pedido.estado = estado;
-        await _context.SaveChangesAsync();
+        // Comprobar si el estado cambió
+        if (pedido.estado != estado)
+        {
+            pedido.estado = estado;
+
+            // Notificar cuando está listo para retirar
+            if (estado == "Listo para retirar")
+            {
+                _context.Notificaciones.Add(new Notificacion
+                {
+                    id_Usuario = pedido.id_Usuario,
+                    id_pedido = pedido.id_pedido,
+                    Titulo = "Pedido listo para retirar",
+                    Mensaje = $"Tu pedido #{pedido.id_pedido} está listo para retirar.",
+                    Tipo = "Pedido",
+                    Leida = false,
+                    FechaCreacion = DateTime.UtcNow
+                });
+            }
+
+            // Notificar cuando se cancela
+            else if (estado == "Cancelado")
+            {
+                _context.Notificaciones.Add(new Notificacion
+                {
+                    id_Usuario = pedido.id_Usuario,
+                    id_pedido = pedido.id_pedido,
+                    Titulo = "Pedido cancelado",
+                    Mensaje = $"Tu pedido #{pedido.id_pedido} fue cancelado.",
+                    Tipo = "Pedido",
+                    Leida = false,
+                    FechaCreacion = DateTime.UtcNow
+                });
+            }
+
+            // Guardar los cambios en MySQL
+            await _context.SaveChangesAsync();
+        }
+
+        TempData["Mensaje"] = "Estado del pedido actualizado correctamente.";
 
         return RedirectToAction(nameof(Details), new { id });
     }
+
 
         // GET: Pedidos/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -160,10 +206,12 @@ namespace CentroDeCopias.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        
+
+
 
         // POST: Pedidos/Confirmar/5
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Confirmar(int id)
         {
@@ -189,12 +237,37 @@ namespace CentroDeCopias.Controllers
                 return RedirectToAction(nameof(Details), new { id });
             }
 
+            // Cambiar el estado del pedido
             pedido.estado = "Confirmado";
+
+            // Buscar los administradores activos
+            var administradores = await _context.Usuarios
+                .Where(u => u.Rol == "Admin" && u.activo)
+                .ToListAsync();
+
+            // Crear una notificación para cada administrador
+            foreach (var admin in administradores)
+            {
+                _context.Notificaciones.Add(new Notificacion
+                {
+                    id_Usuario = admin.id_Usuario,
+                    id_pedido = pedido.id_pedido,
+                    Titulo = "Nuevo pedido confirmado",
+                    Mensaje = $"Se confirmó el pedido #{pedido.id_pedido}.",
+                    Tipo = "Pedido",
+                    Leida = false,
+                    FechaCreacion = DateTime.UtcNow
+                });
+            }
+
+            // Guardar el pedido y las notificaciones
             await _context.SaveChangesAsync();
 
             TempData["Mensaje"] = "Pedido confirmado correctamente.";
+
             return RedirectToAction(nameof(Details), new { id });
         }
+
 
         // GET: Pedidos/AgregarProducto/5
         [Authorize]
@@ -269,7 +342,7 @@ namespace CentroDeCopias.Controllers
             TempData["Mensaje"] = "Producto agregado a tu pedido";
             return RedirectToAction(nameof(Details), new { id = pedido.id_pedido });
         }
-    
+
 
     }
 }

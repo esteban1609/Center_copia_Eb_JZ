@@ -1,15 +1,17 @@
 
-using CentroDeCopias.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CentroDeCopias.Models
 {
     public class DataContext : DbContext
     {
-        public DataContext(DbContextOptions<DataContext> options) : base(options)
+        public DataContext(
+            DbContextOptions<DataContext> options)
+            : base(options)
         {
         }
 
+        // TABLAS
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Pedido> Pedidos { get; set; }
         public DbSet<DetallePedido> DetallesPedido { get; set; }
@@ -17,74 +19,84 @@ namespace CentroDeCopias.Models
         public DbSet<Documento> Documentos { get; set; }
         public DbSet<Stock> Stocks { get; set; }
 
+        // NUEVA TABLA
+        public DbSet<Notificacion> Notificaciones { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
 
+            // Usuario 1:N Pedido
+            modelBuilder.Entity<Pedido>()
+                .HasOne(p => p.Usuario)
+                .WithMany(u => u.Pedidos)
+                .HasForeignKey(p => p.id_Usuario);
 
+            // Usuario 1:N Documento
+            modelBuilder.Entity<Documento>()
+                .HasOne(d => d.Usuario)
+                .WithMany(u => u.Documentos)
+                .HasForeignKey(d => d.IdUsuario);
 
+            // Pedido 1:N DetallePedido
+            modelBuilder.Entity<DetallePedido>()
+                .HasOne<Pedido>()
+                .WithMany(p => p.Detalles)
+                .HasForeignKey(d => d.id_pedido)
+                .IsRequired();
 
+            // Pedido 1:N Documento
+            modelBuilder.Entity<Documento>()
+                .HasOne(d => d.pedido)
+                .WithMany(p => p.Documentos)
+                .HasForeignKey(d => d.IdPedido);
 
-protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-    base.OnModelCreating(modelBuilder);
+            // Producto 1:N DetallePedido
+            modelBuilder.Entity<DetallePedido>()
+                .HasOne<Producto>(d => d.Producto)
+                .WithMany(p => p.DetallesPedido)
+                .HasForeignKey(d => d.id_producto)
+                .IsRequired();
 
-    // Usuario 1:N Pedido
-    modelBuilder.Entity<Pedido>()
-        .HasOne(p => p.Usuario)
-        .WithMany(u => u.Pedidos)
-        .HasForeignKey(p => p.id_Usuario);
+            // Documento 1:N DetallePedido
+            modelBuilder.Entity<DetallePedido>()
+                .HasOne<Documento>(d => d.Documento)
+                .WithMany(d => d.DetallesPedido)
+                .HasForeignKey(d => d.id_documento)
+                .IsRequired(false);
 
-    // Usuario 1:N Documento
-    modelBuilder.Entity<Documento>()
-        .HasOne(d => d.Usuario)
-        .WithMany(u => u.Documentos)
-        .HasForeignKey(d => d.IdUsuario);
+            // Producto 1:1 Stock
+            modelBuilder.Entity<Stock>()
+                .HasOne(s => s.Producto)
+                .WithOne(p => p.Stock)
+                .HasForeignKey<Stock>(s => s.IdProducto);
 
-    // Pedido 1:N DetallePedido
-    modelBuilder.Entity<DetallePedido>()
-        .HasOne<Pedido>()
-        .WithMany(p => p.Detalles)
-        .HasForeignKey(d => d.id_pedido)
-        .IsRequired();
-    
-    //pedido 1:N Documento
-    modelBuilder.Entity<Documento>()
-    .HasOne(d => d.pedido)
-    .WithMany(p => p.Documentos)
-    .HasForeignKey(d => d.IdPedido);
+            // NUEVAS RELACIONES DE NOTIFICACIONES
 
-    // Producto 1:N DetallePedido
-    modelBuilder.Entity<DetallePedido>()
-        .HasOne<Producto>(d => d.Producto)
-        .WithMany(p => p.DetallesPedido)
-        .HasForeignKey(d => d.id_producto)
-        .IsRequired();
+            // Usuario 1:N Notificacion
+            modelBuilder.Entity<Notificacion>()
+                .HasOne(n => n.Usuario)
+                .WithMany()
+                .HasForeignKey(n => n.id_Usuario)
+                .OnDelete(DeleteBehavior.Restrict);
 
-    // Documento 1:N DetallePedido
-    modelBuilder.Entity<DetallePedido>()
-        .HasOne<Documento>(d => d.Documento)
-        .WithMany(d => d.DetallesPedido)
-        .HasForeignKey(d => d.id_documento)
-        .IsRequired(false);
+            // Pedido 1:N Notificacion
+            modelBuilder.Entity<Notificacion>()
+                .HasOne(n => n.Pedido)
+                .WithMany()
+                .HasForeignKey(n => n.id_pedido)
+                .OnDelete(DeleteBehavior.SetNull);
 
-    // Producto 1:1 Stock
-    modelBuilder.Entity<Stock>()
-        .HasOne(s => s.Producto)
-        .WithOne(p => p.Stock)
-        .HasForeignKey<Stock>(s => s.IdProducto);
+            // CLAVES PRIMARIAS
+            modelBuilder.Entity<Documento>()
+                .HasKey(d => d.IdDocumento);
 
-    // Claves primarias
-    modelBuilder.Entity<Documento>()
-        .HasKey(d => d.IdDocumento);
+            modelBuilder.Entity<Stock>()
+                .HasKey(s => s.IdStock);
 
-    modelBuilder.Entity<Stock>()
-        .HasKey(s => s.IdStock);
-
-    // Propiedad solo para mostrar el nombre
-    modelBuilder.Entity<Pedido>()
-        .Ignore(p => p.nombreusuario);
-
-}
-
-
+            // Propiedad solo para mostrar el nombre
+            modelBuilder.Entity<Pedido>()
+                .Ignore(p => p.nombreusuario);
+        }
     }
 }

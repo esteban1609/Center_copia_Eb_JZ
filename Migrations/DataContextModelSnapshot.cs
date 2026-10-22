@@ -112,6 +112,50 @@ namespace Center_copia_EB_JZ.Migrations
                     b.ToTable("Documentos");
                 });
 
+            modelBuilder.Entity("CentroDeCopias.Models.Notificacion", b =>
+                {
+                    b.Property<int>("IdNotificacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("IdNotificacion"));
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("Leida")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Mensaje")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int>("id_Usuario")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("id_pedido")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdNotificacion");
+
+                    b.HasIndex("id_Usuario");
+
+                    b.HasIndex("id_pedido");
+
+                    b.ToTable("Notificaciones");
+                });
+
             modelBuilder.Entity("CentroDeCopias.Models.Pedido", b =>
                 {
                     b.Property<int>("id_pedido")
@@ -283,6 +327,24 @@ namespace Center_copia_EB_JZ.Migrations
                     b.Navigation("Usuario");
 
                     b.Navigation("pedido");
+                });
+
+            modelBuilder.Entity("CentroDeCopias.Models.Notificacion", b =>
+                {
+                    b.HasOne("CentroDeCopias.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("id_Usuario")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CentroDeCopias.Models.Pedido", "Pedido")
+                        .WithMany()
+                        .HasForeignKey("id_pedido")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Pedido");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("CentroDeCopias.Models.Pedido", b =>
