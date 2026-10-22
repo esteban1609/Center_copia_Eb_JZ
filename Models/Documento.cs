@@ -38,6 +38,6 @@ namespace CentroDeCopias.Models
         public bool DobleFaz { get; set; }
         public string TamanoHoja { get; set; } = "A4";
         public string Anillado { get; set; } = "Ninguno";
-        public double Precio { get; set; }
+        public decimal Precio { get; set; }
     }
 }

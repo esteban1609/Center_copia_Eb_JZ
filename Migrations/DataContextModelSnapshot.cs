@@ -30,15 +30,6 @@ namespace Center_copia_EB_JZ.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id_detalle"));
 
-                    b.Property<int?>("DocumentoIdDocumento")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Pedidoid_pedido")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ProductoIdProducto")
-                        .HasColumnType("int");
-
                     b.Property<int>("cantidad")
                         .HasColumnType("int");
 
@@ -56,12 +47,6 @@ namespace Center_copia_EB_JZ.Migrations
                         .HasColumnType("decimal(12,2)");
 
                     b.HasKey("id_detalle");
-
-                    b.HasIndex("DocumentoIdDocumento");
-
-                    b.HasIndex("Pedidoid_pedido");
-
-                    b.HasIndex("ProductoIdProducto");
 
                     b.HasIndex("id_documento");
 
@@ -107,8 +92,8 @@ namespace Center_copia_EB_JZ.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
-                    b.Property<double>("Precio")
-                        .HasColumnType("double");
+                    b.Property<decimal>("Precio")
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<string>("RutaArchivo")
                         .IsRequired()
@@ -261,28 +246,16 @@ namespace Center_copia_EB_JZ.Migrations
             modelBuilder.Entity("CentroDeCopias.Models.DetallePedido", b =>
                 {
                     b.HasOne("CentroDeCopias.Models.Documento", "Documento")
-                        .WithMany()
-                        .HasForeignKey("DocumentoIdDocumento");
-
-                    b.HasOne("CentroDeCopias.Models.Pedido", null)
-                        .WithMany("Detalles")
-                        .HasForeignKey("Pedidoid_pedido");
-
-                    b.HasOne("CentroDeCopias.Models.Producto", "Producto")
-                        .WithMany()
-                        .HasForeignKey("ProductoIdProducto");
-
-                    b.HasOne("CentroDeCopias.Models.Documento", null)
                         .WithMany("DetallesPedido")
                         .HasForeignKey("id_documento");
 
                     b.HasOne("CentroDeCopias.Models.Pedido", null)
-                        .WithMany()
+                        .WithMany("Detalles")
                         .HasForeignKey("id_pedido")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CentroDeCopias.Models.Producto", null)
+                    b.HasOne("CentroDeCopias.Models.Producto", "Producto")
                         .WithMany("DetallesPedido")
                         .HasForeignKey("id_producto")
                         .OnDelete(DeleteBehavior.Cascade)

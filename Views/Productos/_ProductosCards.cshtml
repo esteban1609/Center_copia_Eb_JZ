@@ -15,8 +15,8 @@
                     <h5 class="card-title">@p.Nombre</h5>
                     <p class="card-text text-muted small">@p.Categoria</p>
                     <p class="card-text">@p.Precio.ToString("C")</p>
-                    <a asp-controller="Pedidos" asp-action="AgregarProducto" asp-route-id="@p.IdProducto"
-                       class="btn btn-primary mt-auto">Agregar al pedido</a>
+                    <a asp-controller="DetallesPedido" asp-action="Agregar" asp-route-id="@p.IdProducto"
+                        class="btn btn-primary mt-auto">Agregar al pedido</a>
 
                     @if (User.IsInRole("Admin"))
                     {

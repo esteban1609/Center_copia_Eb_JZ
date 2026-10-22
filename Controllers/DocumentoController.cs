@@ -26,6 +26,19 @@ namespace CentroDeCopias.Controllers
         {
             return View();
         }
+        private decimal CalcularPrecioImpresion(int copias, bool color)
+        {
+            decimal precioPorHoja;
+
+            if (copias <= 20)
+                precioPorHoja = color ? 100 : 80;
+            else if (copias <= 100)
+                precioPorHoja = color ? 70 : 60;
+            else
+                precioPorHoja = color ? 50 : 40;
+
+            return precioPorHoja * copias;
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -86,8 +99,8 @@ namespace CentroDeCopias.Controllers
                 await archivo.CopyToAsync(stream);
             }
 
-            // TODO: definir precio real según copias/color/tamaño (de momento en 0)
-            double precio = 0;
+            // TODO: definir precio real según copias/color/tamaño 
+            decimal precio = CalcularPrecioImpresion(copias, color);
 
             var documento = new Documento
             {

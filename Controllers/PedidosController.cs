@@ -195,6 +195,80 @@ namespace CentroDeCopias.Controllers
             TempData["Mensaje"] = "Pedido confirmado correctamente.";
             return RedirectToAction(nameof(Details), new { id });
         }
+
+        // GET: Pedidos/AgregarProducto/5
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> AgregarProducto(int id)
+        {
+            var producto = await _context.Productos.FindAsync(id);
+            if (producto == null) return NotFound();
+
+            ViewBag.Producto = producto;
+            return View();
+        }
+
+        // POST: Pedidos/AgregarProducto
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AgregarProducto(int idProducto, int cantidad)
+        {
+            var producto = await _context.Productos.FindAsync(idProducto);
+            if (producto == null) return NotFound();
+
+            if (cantidad <= 0)
+            {
+                ModelState.AddModelError("", "La cantidad tiene que ser mayor a 0");
+                ViewBag.Producto = producto;
+                return View();
+            }
+
+            // Busca un pedido Pendiente del usuario, o crea uno nuevo
+            var pedido = await _context.Pedidos
+                .FirstOrDefaultAsync(p => p.id_Usuario == UsuarioActualId && p.estado == "Pendiente");
+
+            if (pedido == null)
+            {
+                pedido = new Pedido
+                {
+                    id_Usuario = UsuarioActualId,
+                    fecha = DateTime.Now,
+                    estado = "Pendiente",
+                    total = 0
+                };
+                _context.Pedidos.Add(pedido);
+                await _context.SaveChangesAsync();
+            }
+
+            // Si el producto ya está en el pedido, suma cantidad en vez de duplicar la línea
+            var detalleExistente = await _context.DetallesPedido
+                .FirstOrDefaultAsync(d => d.id_pedido == pedido.id_pedido && d.id_producto == idProducto);
+
+            decimal subtotal = producto.Precio * cantidad;
+
+            if (detalleExistente != null)
+            {
+                detalleExistente.cantidad += cantidad;
+                detalleExistente.precio += subtotal;
+            }
+            else
+            {
+                _context.DetallesPedido.Add(new DetallePedido
+                {
+                    id_pedido = pedido.id_pedido,
+                    id_producto = idProducto,
+                    cantidad = cantidad,
+                    precio = subtotal
+                });
+            }
+
+            pedido.total += subtotal;
+            await _context.SaveChangesAsync();
+
+            TempData["Mensaje"] = "Producto agregado a tu pedido";
+            return RedirectToAction(nameof(Details), new { id = pedido.id_pedido });
+        }
     
 
     }

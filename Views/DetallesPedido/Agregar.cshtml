@@ -1,0 +1,29 @@
+@{
+    var producto = (CentroDeCopias.Models.Producto)ViewBag.Producto;
+    ViewData["Title"] = "Agregar producto al pedido";
+}
+
+<h1>Agregar al pedido</h1>
+
+<div class="d-flex align-items-center mb-4">
+    <img src="@(string.IsNullOrEmpty(producto.RutaImagen) ? "/images/productos/sin-imagen.png" : producto.RutaImagen)"
+         style="width: 100px; height: 100px; object-fit: cover;" class="me-3" />
+    <div>
+        <h4>@producto.Nombre</h4>
+        <p>@producto.Precio.ToString("C")</p>
+    </div>
+</div>
+
+<form asp-action="Agregar" method="post">
+    <input type="hidden" name="idProducto" value="@producto.IdProducto" />
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group">
+        <label>Cantidad</label>
+        <input type="number" name="cantidad" min="1" value="1" class="form-control" style="max-width: 150px;" />
+    </div>
+
+    <div class="form-group mt-3">
+        <input type="submit" value="Agregar al pedido" class="btn btn-primary" />
+    </div>
+</form>

@@ -42,7 +42,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
     // Pedido 1:N DetallePedido
     modelBuilder.Entity<DetallePedido>()
         .HasOne<Pedido>()
-        .WithMany()
+        .WithMany(p => p.Detalles)
         .HasForeignKey(d => d.id_pedido)
         .IsRequired();
     
@@ -54,14 +54,14 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 
     // Producto 1:N DetallePedido
     modelBuilder.Entity<DetallePedido>()
-        .HasOne<Producto>()
+        .HasOne<Producto>(d => d.Producto)
         .WithMany(p => p.DetallesPedido)
         .HasForeignKey(d => d.id_producto)
         .IsRequired();
 
     // Documento 1:N DetallePedido
     modelBuilder.Entity<DetallePedido>()
-        .HasOne<Documento>()
+        .HasOne<Documento>(d => d.Documento)
         .WithMany(d => d.DetallesPedido)
         .HasForeignKey(d => d.id_documento)
         .IsRequired(false);
