@@ -1,25 +1,82 @@
 @model CentroDeCopias.Models.Pedido
 
 @{
-    ViewData["Title"] = "Editar estado del pedido";
+    ViewData["Title"] = "Editar pedido";
 }
 
-<h1>Editar estado del pedido #@Model.id_pedido</h1>
+<h1>Editar pedido #@Model.id_pedido</h1>
 
-<p>Cliente: @Model.Usuario.nombre @Model.Usuario.apellido</p>
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" name="id" value="@Model.id_pedido" />
-    <div asp-validation-summary="All" class="text-danger"></div>
+<h3>Documentos</h3>
+@if (!Model.Documentos.Any())
+{
+    <p class="text-muted">No hay documentos en este pedido.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr><th>Nombre</th><th>Copias</th><th>Precio</th><th></th></tr>
+        </thead>
+        <tbody>
+        @foreach (var d in Model.Documentos)
+        {
+            <tr>
+                <td>@d.Nombre</td>
+                <td>@d.Copias</td>
+                <td>@d.Precio.ToString("C")</td>
+                <td>
+                    <form asp-action="EliminarDocumento" method="post" style="display:inline">
+                        <input type="hidden" name="idDocumento" value="@d.IdDocumento" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
 
-    <div class="form-group">
-        <label>Estado</label>
-        <select name="estado" class="form-control" asp-items="ViewBag.Estados"></select>
-    </div>
+<h3>Productos</h3>
+@if (!Model.Detalles.Any())
+{
+    <p class="text-muted">No hay productos en este pedido.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr><th>Producto</th><th>Cantidad</th><th>Precio</th><th></th></tr>
+        </thead>
+        <tbody>
+        @foreach (var d in Model.Detalles)
+        {
+            <tr>
+                <td>@d.Producto.Nombre</td>
+                <td>
+                    <form asp-action="ActualizarCantidad" method="post" class="d-flex align-items-center gap-2">
+                        <input type="hidden" name="idDetalle" value="@d.id_detalle" />
+                        <input type="number" name="cantidad" value="@d.cantidad" min="1" class="form-control" style="width:80px" />
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Actualizar</button>
+                    </form>
+                </td>
+                <td>@d.precio.ToString("C")</td>
+                <td>
+                    <form asp-action="EliminarProducto" method="post" style="display:inline">
+                        <input type="hidden" name="idDetalle" value="@d.id_detalle" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
 
-    <div class="form-group">
-        <input type="submit" value="Guardar" class="btn btn-primary" />
-    </div>
-</form>
+<p><strong>Total: @Model.total.ToString("C")</strong></p>
 
-<a asp-action="Details" asp-route-id="@Model.id_pedido">Volver al pedido</a>
+<a asp-action="Details" asp-route-id="@Model.id_pedido" class="btn btn-primary" >Volver al pedido</a>

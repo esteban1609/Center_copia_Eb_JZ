@@ -12,7 +12,7 @@
 }
 
 <p>
-    <a asp-action="Create">Nuevo pedido</a>
+    <a asp-action="Create" class="btn btn-primary">Nuevo pedido</a>
 </p>
 <table class="table">
     <thead>
@@ -33,11 +33,18 @@
             <td>@item.estado</td>
             <td>@item.total.ToString("C")</td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.id_pedido">Editar</a> |
-                <a asp-action="Details" asp-route-id="@item.id_pedido">Detalles</a> |
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-action="EditarEstado" asp-route-id="@item.id_pedido" class="btn btn-warning">Cambiar estado</a> 
+                }
+                else if (item.estado == "Pendiente")
+                {
+                    <a asp-action="Edit" asp-route-id="@item.id_pedido" class="btn btn-btn-warning">Editar</a> 
+                }
+                <a asp-action="Details" asp-route-id="@item.id_pedido" class="btn btn-info">Detalles</a> |
                 @if (item.estado == "Pendiente")
                 {
-                    <a asp-action="Delete" asp-route-id="@item.id_pedido">Eliminar</a>
+                    <a asp-action="Delete" asp-route-id="@item.id_pedido" class="btn btn-danger" >Eliminar</a>
                 }
             </td>
         </tr>

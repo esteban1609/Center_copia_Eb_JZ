@@ -18,11 +18,19 @@ namespace CentroDeCopias.Controllers
         private int UsuarioActualId =>
         int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
+        [Authorize]
         // GET: Pedidos
         public async Task<IActionResult> Index()
         {
-            var pedidos = _context.Pedidos.Include(p => p.Usuario);
-            return View(await pedidos.ToListAsync());
+            IQueryable<Pedido> query = _context.Pedidos.Include(p => p.Usuario);
+
+            if (!User.IsInRole("Admin"))
+            {
+                query = query.Where(p => p.id_Usuario == UsuarioActualId);
+            }
+
+            var pedidos = await query.OrderByDescending(p => p.fecha).ToListAsync();
+            return View(pedidos);
         }
 
         // GET: Pedidos/Details/5
@@ -78,13 +86,13 @@ namespace CentroDeCopias.Controllers
         }
 
         private static readonly string[] EstadosValidos =
-{
-    "Pendiente", "Confirmado", "En impresión", "Listo para retirar", "Entregado", "Cancelado"
-};
+        {
+            "Pendiente", "Confirmado", "En impresión", "Listo para retirar", "Entregado", "Cancelado"
+        };
 
-        // GET: Pedidos/Edit/5
+        // GET: Pedidos/EditarEstado/5
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> EditarEstado(int? id)
         {
             if (id == null) return NotFound();
 
@@ -98,73 +106,27 @@ namespace CentroDeCopias.Controllers
             return View(pedido);
         }
 
-
-    // POST: Pedidos/Edit/5
-    [HttpPost]
-    [Authorize(Roles = "Admin")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, string estado)
-    {
-        var pedido = await _context.Pedidos.FindAsync(id);
-
-        if (pedido == null)
-            return NotFound();
-
-        // Validar que el estado sea correcto
-        if (!EstadosValidos.Contains(estado))
+        // POST: Pedidos/EditarEstado/5
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditarEstado(int id, string estado)
         {
-            ModelState.AddModelError("", "Estado no válido");
+            var pedido = await _context.Pedidos.FindAsync(id);
+            if (pedido == null) return NotFound();
 
-            ViewBag.Estados = new SelectList(
-                EstadosValidos, pedido.estado);
+            if (!EstadosValidos.Contains(estado))
+            {
+                ModelState.AddModelError("", "Estado no válido");
+                ViewBag.Estados = new SelectList(EstadosValidos, pedido.estado);
+                return View(pedido);
+            }
 
-            return View(pedido);
-        }
-
-        // Comprobar si el estado cambió
-        if (pedido.estado != estado)
-        {
             pedido.estado = estado;
-
-            // Notificar cuando está listo para retirar
-            if (estado == "Listo para retirar")
-            {
-                _context.Notificaciones.Add(new Notificacion
-                {
-                    id_Usuario = pedido.id_Usuario,
-                    id_pedido = pedido.id_pedido,
-                    Titulo = "Pedido listo para retirar",
-                    Mensaje = $"Tu pedido #{pedido.id_pedido} está listo para retirar.",
-                    Tipo = "Pedido",
-                    Leida = false,
-                    FechaCreacion = DateTime.UtcNow
-                });
-            }
-
-            // Notificar cuando se cancela
-            else if (estado == "Cancelado")
-            {
-                _context.Notificaciones.Add(new Notificacion
-                {
-                    id_Usuario = pedido.id_Usuario,
-                    id_pedido = pedido.id_pedido,
-                    Titulo = "Pedido cancelado",
-                    Mensaje = $"Tu pedido #{pedido.id_pedido} fue cancelado.",
-                    Tipo = "Pedido",
-                    Leida = false,
-                    FechaCreacion = DateTime.UtcNow
-                });
-            }
-
-            // Guardar los cambios en MySQL
             await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), new { id });
         }
-
-        TempData["Mensaje"] = "Estado del pedido actualizado correctamente.";
-
-        return RedirectToAction(nameof(Details), new { id });
-    }
-
 
         // GET: Pedidos/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -206,12 +168,10 @@ namespace CentroDeCopias.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
-
+        
 
         // POST: Pedidos/Confirmar/5
         [HttpPost]
-        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Confirmar(int id)
         {
@@ -237,112 +197,111 @@ namespace CentroDeCopias.Controllers
                 return RedirectToAction(nameof(Details), new { id });
             }
 
-            // Cambiar el estado del pedido
             pedido.estado = "Confirmado";
-
-            // Buscar los administradores activos
-            var administradores = await _context.Usuarios
-                .Where(u => u.Rol == "Admin" && u.activo)
-                .ToListAsync();
-
-            // Crear una notificación para cada administrador
-            foreach (var admin in administradores)
-            {
-                _context.Notificaciones.Add(new Notificacion
-                {
-                    id_Usuario = admin.id_Usuario,
-                    id_pedido = pedido.id_pedido,
-                    Titulo = "Nuevo pedido confirmado",
-                    Mensaje = $"Se confirmó el pedido #{pedido.id_pedido}.",
-                    Tipo = "Pedido",
-                    Leida = false,
-                    FechaCreacion = DateTime.UtcNow
-                });
-            }
-
-            // Guardar el pedido y las notificaciones
             await _context.SaveChangesAsync();
 
             TempData["Mensaje"] = "Pedido confirmado correctamente.";
-
             return RedirectToAction(nameof(Details), new { id });
         }
-
-
-        // GET: Pedidos/AgregarProducto/5
+        // GET: Pedidos/Edit/5
         [Authorize]
-        [HttpGet]
-        public async Task<IActionResult> AgregarProducto(int id)
+        public async Task<IActionResult> Edit(int? id)
         {
-            var producto = await _context.Productos.FindAsync(id);
-            if (producto == null) return NotFound();
+            if (id == null) return NotFound();
 
-            ViewBag.Producto = producto;
-            return View();
+            var pedido = await _context.Pedidos
+                .Include(p => p.Documentos)
+                .Include(p => p.Detalles).ThenInclude(d => d.Producto)
+                .FirstOrDefaultAsync(p => p.id_pedido == id);
+
+            if (pedido == null) return NotFound();
+
+            if (pedido.id_Usuario != UsuarioActualId) return Forbid();
+
+            if (pedido.estado != "Pendiente")
+            {
+                TempData["Error"] = "Solo podés modificar pedidos en estado Pendiente.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            return View(pedido);
         }
 
-        // POST: Pedidos/AgregarProducto
+        // POST: Pedidos/ActualizarCantidad
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AgregarProducto(int idProducto, int cantidad)
+        public async Task<IActionResult> ActualizarCantidad(int idDetalle, int cantidad)
         {
-            var producto = await _context.Productos.FindAsync(idProducto);
-            if (producto == null) return NotFound();
+            var detalle = await _context.DetallesPedido
+                .Include(d => d.Producto)
+                .FirstOrDefaultAsync(d => d.id_detalle == idDetalle);
+
+            if (detalle == null) return NotFound();
+
+            var pedido = await _context.Pedidos.FindAsync(detalle.id_pedido);
+            if (pedido == null || pedido.id_Usuario != UsuarioActualId) return Forbid();
+            if (pedido.estado != "Pendiente") return Forbid();
 
             if (cantidad <= 0)
             {
-                ModelState.AddModelError("", "La cantidad tiene que ser mayor a 0");
-                ViewBag.Producto = producto;
-                return View();
+                TempData["Error"] = "La cantidad tiene que ser mayor a 0. Para sacarlo, usá el botón Eliminar.";
+                return RedirectToAction(nameof(Edit), new { id = pedido.id_pedido });
             }
 
-            // Busca un pedido Pendiente del usuario, o crea uno nuevo
-            var pedido = await _context.Pedidos
-                .FirstOrDefaultAsync(p => p.id_Usuario == UsuarioActualId && p.estado == "Pendiente");
+            decimal precioUnitario = detalle.Producto.Precio;
+            pedido.total -= detalle.precio;
 
-            if (pedido == null)
-            {
-                pedido = new Pedido
-                {
-                    id_Usuario = UsuarioActualId,
-                    fecha = DateTime.Now,
-                    estado = "Pendiente",
-                    total = 0
-                };
-                _context.Pedidos.Add(pedido);
-                await _context.SaveChangesAsync();
-            }
+            detalle.cantidad = cantidad;
+            detalle.precio = precioUnitario * cantidad;
 
-            // Si el producto ya está en el pedido, suma cantidad en vez de duplicar la línea
-            var detalleExistente = await _context.DetallesPedido
-                .FirstOrDefaultAsync(d => d.id_pedido == pedido.id_pedido && d.id_producto == idProducto);
-
-            decimal subtotal = producto.Precio * cantidad;
-
-            if (detalleExistente != null)
-            {
-                detalleExistente.cantidad += cantidad;
-                detalleExistente.precio += subtotal;
-            }
-            else
-            {
-                _context.DetallesPedido.Add(new DetallePedido
-                {
-                    id_pedido = pedido.id_pedido,
-                    id_producto = idProducto,
-                    cantidad = cantidad,
-                    precio = subtotal
-                });
-            }
-
-            pedido.total += subtotal;
+            pedido.total += detalle.precio;
             await _context.SaveChangesAsync();
 
-            TempData["Mensaje"] = "Producto agregado a tu pedido";
-            return RedirectToAction(nameof(Details), new { id = pedido.id_pedido });
+            return RedirectToAction(nameof(Edit), new { id = pedido.id_pedido });
         }
 
+        // POST: Pedidos/EliminarProducto
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EliminarProducto(int idDetalle)
+        {
+            var detalle = await _context.DetallesPedido.FindAsync(idDetalle);
+            if (detalle == null) return NotFound();
+
+            var pedido = await _context.Pedidos.FindAsync(detalle.id_pedido);
+            if (pedido == null || pedido.id_Usuario != UsuarioActualId) return Forbid();
+            if (pedido.estado != "Pendiente") return Forbid();
+
+            pedido.total -= detalle.precio;
+            _context.DetallesPedido.Remove(detalle);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Edit), new { id = pedido.id_pedido });
+        }
+
+        // POST: Pedidos/EliminarDocumento
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EliminarDocumento(int idDocumento)
+        {
+            var documento = await _context.Documentos.FindAsync(idDocumento);
+            if (documento == null) return NotFound();
+
+            var pedido = await _context.Pedidos.FindAsync(documento.IdPedido);
+            if (pedido == null || pedido.id_Usuario != UsuarioActualId) return Forbid();
+            if (pedido.estado != "Pendiente") return Forbid();
+
+            pedido.total -= documento.Precio;
+            _context.Documentos.Remove(documento);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Edit), new { id = pedido.id_pedido });
+        }
+
+        
 
     }
 }
