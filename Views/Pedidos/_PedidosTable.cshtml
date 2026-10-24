@@ -1,0 +1,43 @@
+@model IEnumerable<CentroDeCopias.Models.Pedido>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Usuario</th>
+            <th>Estado</th>
+            <th>Total</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @if (!Model.Any())
+    {
+        <tr><td colspan="5" class="text-muted">No se encontraron pedidos.</td></tr>
+    }
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.fecha.ToString("dd/MM/yyyy")</td>
+            <td>@item.Usuario.nombre</td>
+            <td>@item.estado</td>
+            <td>@item.total.ToString("C")</td>
+            <td>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-action="EditarEstado" asp-route-id="@item.id_pedido" class="btn btn-warning">Cambiar estado</a> <text>|</text>
+                }
+                else if (item.estado == "Pendiente")
+                {
+                    <a asp-action="Edit" asp-route-id="@item.id_pedido" class="btn btn-light">Editar</a> <text>|</text>
+                }
+                <a asp-action="Details" asp-route-id="@item.id_pedido" class="btn btn-info">Detalles</a> |
+                @if (item.estado == "Pendiente")
+                {
+                    <a asp-action="Delete" asp-route-id="@item.id_pedido"class="btn btn-danger">Eliminar</a>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

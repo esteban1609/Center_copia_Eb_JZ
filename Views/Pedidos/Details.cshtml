@@ -92,5 +92,12 @@ else
         <input type="submit" value="Confirmar pedido" class="btn btn-success" />
     </form>
 }
-<a asp-action="Edit" asp-route-id="@Model.id_pedido" class="btn btn-primary">Editar</a> |
+@if (User.IsInRole("Admin"))
+{
+    <a asp-action="EditarEstado" asp-route-id="@Model.id_pedido" class="btn btn-warning">Cambiar estado</a> <text>|</text>
+}
+else if (Model.estado == "Pendiente")
+{
+    <a asp-action="Edit" asp-route-id="@Model.id_pedido" class="btn btn-light">Editar</a> <text>|</text>
+}
 <a asp-action="Index" class="btn btn-primary">Volver a la lista</a>

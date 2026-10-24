@@ -14,40 +14,82 @@
 <p>
     <a asp-action="Create" class="btn btn-primary">Nuevo pedido</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Fecha</th>
-            <th>Usuario</th>
-            <th>Estado</th>
-            <th>Total</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>@item.fecha.ToString("dd/MM/yyyy")</td>
-            <td>@item.Usuario.nombre</td>
-            <td>@item.estado</td>
-            <td>@item.total.ToString("C")</td>
-            <td>
-                @if (User.IsInRole("Admin"))
+
+@if (User.IsInRole("Admin"))
+{
+    <div class="row g-2 mb-4 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label">Buscar por nombre</label>
+            <input type="text" id="filtroNombre" class="form-control" placeholder="Nombre o apellido del cliente" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Estado</label>
+            <select id="filtroEstado" class="form-control">
+                <option value="">Todos</option>
+                @foreach (var est in (string[])ViewBag.Estados)
                 {
-                    <a asp-action="EditarEstado" asp-route-id="@item.id_pedido" class="btn btn-warning">Cambiar estado</a> 
+                    <option value="@est">@est</option>
                 }
-                else if (item.estado == "Pendiente")
-                {
-                    <a asp-action="Edit" asp-route-id="@item.id_pedido" class="btn btn-btn-warning">Editar</a> 
-                }
-                <a asp-action="Details" asp-route-id="@item.id_pedido" class="btn btn-info">Detalles</a> |
-                @if (item.estado == "Pendiente")
-                {
-                    <a asp-action="Delete" asp-route-id="@item.id_pedido" class="btn btn-danger" >Eliminar</a>
-                }
-            </td>
-        </tr>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Desde</label>
+            <input type="date" id="filtroDesde" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Hasta</label>
+            <input type="date" id="filtroHasta" class="form-control" />
+        </div>
+        <div class="col-md-1">
+            <button type="button" id="limpiarFiltros" class="btn btn-outline-secondary w-100">Limpiar</button>
+        </div>
+    </div>
+}
+
+<div id="contenedor-pedidos">
+    @await Html.PartialAsync("_PedidosTable", Model)
+</div>
+
+@if (User.IsInRole("Admin"))
+{
+    @section Scripts {
+        <script>
+            const nombre = document.getElementById('filtroNombre');
+            const estado = document.getElementById('filtroEstado');
+            const desde = document.getElementById('filtroDesde');
+            const hasta = document.getElementById('filtroHasta');
+            const contenedor = document.getElementById('contenedor-pedidos');
+            const limpiar = document.getElementById('limpiarFiltros');
+            let timeoutId;
+
+            function buscarConDebounce() {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(buscar, 300);
+            }
+
+            async function buscar() {
+                const params = new URLSearchParams({
+                    nombre: nombre.value,
+                    estado: estado.value,
+                    desde: desde.value,
+                    hasta: hasta.value
+                });
+                const resp = await fetch(`/Pedidos/Buscar?${params}`);
+                contenedor.innerHTML = await resp.text();
+            }
+
+            nombre.addEventListener('input', buscarConDebounce);
+            estado.addEventListener('change', buscar);
+            desde.addEventListener('change', buscar);
+            hasta.addEventListener('change', buscar);
+
+            limpiar.addEventListener('click', () => {
+                nombre.value = '';
+                estado.value = '';
+                desde.value = '';
+                hasta.value = '';
+                buscar();
+            });
+        </script>
     }
-    </tbody>
-</table>
+}

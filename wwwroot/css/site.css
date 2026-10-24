@@ -1,6 +1,108 @@
 html {
   font-size: 14px;
 }
+:root {
+    --cc-magenta: #ec1e79;
+    --cc-blue: #00aeef;
+    --cc-yellow: #ffd200;
+    --cc-dark: #0a0e27;
+    --cc-dark-2: #131a3a;
+    --cc-gradient: linear-gradient(135deg, var(--cc-magenta) 0%, var(--cc-blue) 50%, var(--cc-yellow) 100%);
+}
+
+.cc-hero {
+    background: var(--cc-dark);
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(236, 30, 121, 0.35) 0%, transparent 40%),
+        radial-gradient(circle at 90% 10%, rgba(0, 174, 239, 0.35) 0%, transparent 40%),
+        radial-gradient(circle at 50% 90%, rgba(255, 210, 0, 0.25) 0%, transparent 40%);
+    color: #fff;
+    padding: 4rem 1.5rem;
+    border-radius: 0 0 2rem 2rem;
+}
+
+.cc-hero h1 {
+    font-weight: 800;
+    font-size: 2.8rem;
+    line-height: 1.1;
+}
+
+.cc-hero .cc-gradient-text {
+    background: var(--cc-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.cc-btn-gradient {
+    background: var(--cc-gradient);
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    padding: 0.75rem 1.75rem;
+    border-radius: 50px;
+    display: inline-block;
+    text-decoration: none;
+}
+
+.cc-btn-gradient:hover {
+    color: #fff;
+    opacity: 0.9;
+}
+
+.cc-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.cc-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.cc-badge .icono {
+    font-size: 1.3rem;
+}
+
+.cc-footer {
+    background: var(--cc-dark);
+    color: #fff;
+    padding: 3rem 1.5rem 1.5rem;
+    margin-top: 3rem;
+}
+
+.cc-footer h5 {
+    color: var(--cc-yellow);
+    font-weight: 700;
+}
+
+.cc-footer a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.cc-footer a:hover {
+    color: var(--cc-blue);
+}
+
+.cc-btn-whatsapp {
+    background: #25d366;
+    color: #fff;
+    font-weight: 700;
+    padding: 0.6rem 1.25rem;
+    border-radius: 50px;
+    display: inline-block;
+    text-decoration: none;
+}
+
+.cc-btn-whatsapp:hover {
+    color: #fff;
+    opacity: 0.9;
+}
 
 @media (min-width: 768px) {
   html {

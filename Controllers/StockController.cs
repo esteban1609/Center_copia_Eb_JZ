@@ -97,5 +97,22 @@ namespace CentroDeCopias.Controllers
         }
 
 
+    // GET: Stock/Buscar?q=texto
+    [HttpGet]
+    public async Task<IActionResult> Buscar(string q)
+    {
+        var query = _context.Stocks.Include(s => s.Producto).AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(q))
+        {
+            query = query.Where(s => s.Producto.Nombre.Contains(q));
+        }
+
+        var stock = await query.ToListAsync();
+        return PartialView("_StockTable", stock);
+    }
+
+
+
     }
 }

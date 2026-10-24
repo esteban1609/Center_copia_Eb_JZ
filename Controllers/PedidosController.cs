@@ -22,14 +22,9 @@ namespace CentroDeCopias.Controllers
         // GET: Pedidos
         public async Task<IActionResult> Index()
         {
-            IQueryable<Pedido> query = _context.Pedidos.Include(p => p.Usuario);
+            var pedidos = await ObtenerPedidosFiltrados(null, null, null, null);
 
-            if (!User.IsInRole("Admin"))
-            {
-                query = query.Where(p => p.id_Usuario == UsuarioActualId);
-            }
-
-            var pedidos = await query.OrderByDescending(p => p.fecha).ToListAsync();
+            ViewBag.Estados = EstadosValidos;
             return View(pedidos);
         }
 
@@ -249,7 +244,9 @@ namespace CentroDeCopias.Controllers
                 return RedirectToAction(nameof(Edit), new { id = pedido.id_pedido });
             }
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             decimal precioUnitario = detalle.Producto.Precio;
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
             pedido.total -= detalle.precio;
 
             detalle.cantidad = cantidad;
@@ -300,6 +297,51 @@ namespace CentroDeCopias.Controllers
 
             return RedirectToAction(nameof(Edit), new { id = pedido.id_pedido });
         }
+
+        // GET: Pedidos/Buscar
+[HttpGet]
+public async Task<IActionResult> Buscar(string? nombre, string? estado, DateTime? desde, DateTime? hasta)
+{
+    var pedidos = await ObtenerPedidosFiltrados(nombre, estado, desde, hasta);
+    return PartialView("_PedidosTable", pedidos);
+}
+
+private async Task<List<Pedido>> ObtenerPedidosFiltrados(string? nombre, string? estado, DateTime? desde, DateTime? hasta)
+{
+    IQueryable<Pedido> query = _context.Pedidos.Include(p => p.Usuario);
+
+    if (!User.IsInRole("Admin"))
+    {
+        query = query.Where(p => p.id_Usuario == UsuarioActualId);
+    }
+    else
+    {
+        if (!string.IsNullOrWhiteSpace(nombre))
+        {
+            query = query.Where(p =>
+                p.Usuario.nombre.Contains(nombre) ||
+                p.Usuario.apellido.Contains(nombre));
+        }
+
+        if (!string.IsNullOrWhiteSpace(estado))
+        {
+            query = query.Where(p => p.estado == estado);
+        }
+
+        if (desde.HasValue)
+        {
+            query = query.Where(p => p.fecha >= desde.Value.Date);
+        }
+
+        if (hasta.HasValue)
+        {
+            var hastaFin = hasta.Value.Date.AddDays(1).AddTicks(-1);
+            query = query.Where(p => p.fecha <= hastaFin);
+        }
+    }
+
+    return await query.OrderByDescending(p => p.fecha).ToListAsync();
+}
 
         
 

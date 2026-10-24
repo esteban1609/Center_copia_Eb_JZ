@@ -1,15 +1,33 @@
-﻿@if (User.Identity?.IsAuthenticated == true)
-{
-    <h4>Bienvenido, @User.Identity.Name</h4>
+﻿@{
+    ViewData["Title"] = "Inicio";
+}
 
-    <p>
-        Rol:
-        @User.FindFirst(
-            System.Security.Claims.ClaimTypes.Role
-        )?.Value
-    </p>
-}
-else
-{
-    <p>No hay ningún usuario autenticado.</p>
-}
+<section class="cc-hero">
+    <div class="row align-items-center">
+        <div class="col-lg-7">
+            <h1>
+                Todo lo que necesitás<br />
+                <span class="cc-gradient-text">imprimir</span>
+            </h1>
+            <p class="lead mt-3">
+                Impresiones, fotocopias, cartillas, stickers, fotografías, planos y mucho más.
+            </p>
+            <a href="https://wa.me/TU_NUMERO" target="_blank" class="cc-btn-gradient mt-2">
+                💬 Pedir presupuesto
+            </a>
+
+            <div class="cc-badges">
+                <div class="cc-badge"><span class="icono">🛡️</span> Atención personalizada</div>
+                <div class="cc-badge"><span class="icono">🖨️</span> Calidad en cada trabajo</div>
+                <div class="cc-badge"><span class="icono">⚡</span> Rápido y confiable</div>
+                <div class="cc-badge"><span class="icono">👥</span> Estudiantes y empresas</div>
+                <div class="cc-badge"><span class="icono">📍</span> La Punta, San Luis</div>
+            </div>
+        </div>
+        <div class="col-lg-5 text-center mt-4 mt-lg-0">
+            <img src="~/images/logo-centercopia.jpeg" alt="Center Copia" class="img-fluid" style="max-width: 280px;" />
+        </div>
+    </div>
+</section>
+
+<!-- Acá después sigo con "Nuestros Servicios" y "Promociones" -->

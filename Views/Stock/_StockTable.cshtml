@@ -1,0 +1,32 @@
+@model IEnumerable<CentroDeCopias.Models.Stock>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad disponible</th>
+            <th>Stock mínimo</th>
+            <th>Última actualización</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @if (!Model.Any())
+    {
+        <tr><td colspan="5" class="text-muted">No se encontraron productos.</td></tr>
+    }
+    @foreach (var item in Model)
+    {
+        <tr class="@(item.CantidadDisponible <= item.StockMinimo ? "table-danger" : "")">
+            <td>@item.Producto.Nombre</td>
+            <td>@item.CantidadDisponible</td>
+            <td>@item.StockMinimo</td>
+            <td>@item.UltimaActualizacion.ToString("dd/MM/yyyy HH:mm")</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdStock" class="btn btn-light">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.IdStock"class="btn btn-info">Detalles</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
