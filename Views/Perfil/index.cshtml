@@ -1,12 +1,10 @@
-
 @model CentroDeCopias.Models.Usuario
 
 @{
     ViewData["Title"] = "Mi perfil";
 }
 
-<div class="container-fluid mt-4 mb-5"
-     style="max-width: 1400px;">
+<div class="container-fluid mt-4 mb-5" style="max-width: 1400px;">
 
     @if (TempData["Mensaje"] != null)
     {
@@ -31,24 +29,19 @@
 
                 @if (!string.IsNullOrEmpty(Model.Avatar))
                 {
-                    <img src="@Model.Avatar"
-                         alt="Foto de perfil"
-                         class="rounded-circle"
-                         style="width: 120px;
-                                height: 120px;
-                                object-fit: cover;" />
+                    <img src="@Model.Avatar" alt="Foto de perfil" class="rounded-circle" style="width: 120px;
+                                    height: 120px;
+                                    object-fit: cover;" />
                 }
                 else
                 {
                     <div class="rounded-circle bg-secondary
-                                d-flex align-items-center
-                                justify-content-center"
-                         style="width: 120px;
-                                height: 120px;
-                                flex-shrink: 0;">
+                                    d-flex align-items-center
+                                    justify-content-center" style="width: 120px;
+                                    height: 120px;
+                                    flex-shrink: 0;">
 
-                        <span class="text-white"
-                              style="font-size: 55px;">
+                        <span class="text-white" style="font-size: 55px;">
                             👤
                         </span>
                     </div>
@@ -85,10 +78,8 @@
                         </h4>
 
                         <!-- BOTÓN EDITAR -->
-                        <button type="button"
-                                id="btnEditar"
-                                class="btn btn-outline-primary btn-sm"
-                                onclick="activarEdicion()">
+                        <button type="button" id="btnEditar" class="btn btn-outline-primary btn-sm"
+                            onclick="activarEdicion()">
 
                             Editar información
                         </button>
@@ -139,9 +130,7 @@
                     <!-- FORMULARIO DE EDICIÓN -->
                     <div id="datosEdicion" class="d-none">
 
-                        <form asp-controller="Perfil"
-                              asp-action="Editar"
-                              method="post">
+                        <form asp-controller="Perfil" asp-action="Editar" method="post">
 
                             @Html.AntiForgeryToken()
 
@@ -150,52 +139,34 @@
                                 <!-- NOMBRE -->
                                 <div class="col-md-6">
 
-                                    <label for="nombre"
-                                           class="form-label">
+                                    <label for="nombre" class="form-label">
                                         Nombre
                                     </label>
 
-                                    <input type="text"
-                                           id="nombre"
-                                           name="nombre"
-                                           value="@Model.nombre"
-                                           class="form-control"
-                                           maxlength="50"
-                                           required />
+                                    <input type="text" id="nombre" name="nombre" value="@Model.nombre"
+                                        class="form-control" maxlength="50" required />
                                 </div>
 
                                 <!-- APELLIDO -->
                                 <div class="col-md-6">
 
-                                    <label for="apellido"
-                                           class="form-label">
+                                    <label for="apellido" class="form-label">
                                         Apellido
                                     </label>
 
-                                    <input type="text"
-                                           id="apellido"
-                                           name="apellido"
-                                           value="@Model.apellido"
-                                           class="form-control"
-                                           maxlength="50"
-                                           required />
+                                    <input type="text" id="apellido" name="apellido" value="@Model.apellido"
+                                        class="form-control" maxlength="50" required />
                                 </div>
 
                                 <!-- EMAIL -->
-                                <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Correo electrónico</label>
 
-                                    <label for="email"
-                                           class="form-label">
-                                        Correo electrónico
-                                    </label>
+                                    <input type="email" value="@Model.email" class="form-control" readonly />
 
-                                    <input type="email"
-                                           id="email"
-                                           name="email"
-                                           value="@Model.email"
-                                           class="form-control"
-                                           maxlength="100"
-                                           required />
+                                    <small class="text-muted">
+                                        El correo electrónico no se puede modificar.
+                                    </small>
                                 </div>
 
                                 <!-- ROL -->
@@ -205,10 +176,7 @@
                                         Tipo de cuenta
                                     </label>
 
-                                    <input type="text"
-                                           value="@Model.Rol"
-                                           class="form-control"
-                                           readonly />
+                                    <input type="text" value="@Model.Rol" class="form-control" readonly />
                                 </div>
 
                             </div>
@@ -216,15 +184,12 @@
                             <!-- BOTONES -->
                             <div class="d-flex gap-2 mt-4">
 
-                                <button type="submit"
-                                        class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary">
 
                                     Guardar cambios
                                 </button>
 
-                                <button type="button"
-                                        class="btn btn-outline-secondary"
-                                        onclick="cancelarEdicion()">
+                                <button type="button" class="btn btn-outline-secondary" onclick="cancelarEdicion()">
 
                                     Cancelar
                                 </button>
@@ -249,31 +214,22 @@
                         de hasta 2 MB.
                     </p>
 
-                    <form asp-controller="Perfil"
-                          asp-action="SubirAvatar"
-                          method="post"
-                          enctype="multipart/form-data">
+                    <form asp-controller="Perfil" asp-action="SubirAvatar" method="post" enctype="multipart/form-data">
 
                         @Html.AntiForgeryToken()
 
                         <div class="mb-3">
 
-                            <label for="archivo"
-                                   class="form-label">
+                            <label for="archivo" class="form-label">
                                 Seleccionar imagen
                             </label>
 
-                            <input type="file"
-                                   name="archivo"
-                                   id="archivo"
-                                   class="form-control"
-                                   accept="image/jpeg,image/png"
-                                   required />
+                            <input type="file" name="archivo" id="archivo" class="form-control"
+                                accept="image/jpeg,image/png" required />
 
                         </div>
 
-                        <button type="submit"
-                                class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary">
 
                             Guardar foto
                         </button>
@@ -286,9 +242,7 @@
 
             <hr class="my-4" />
 
-            <a asp-controller="Home"
-               asp-action="Index"
-               class="btn btn-outline-secondary">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
 
                 Volver al inicio
             </a>

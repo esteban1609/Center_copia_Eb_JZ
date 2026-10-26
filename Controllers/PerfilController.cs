@@ -189,12 +189,12 @@ namespace CentroDeCopias.Controllers
 
 
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Editar(
             string nombre,
-            string apellido,
-            string email)
+            string apellido)
         {
             // Obtener el ID del usuario autenticado
             var idClaim = User.FindFirst(
@@ -214,73 +214,36 @@ namespace CentroDeCopias.Controllers
             // Limpiar los datos ingresados
             nombre = nombre?.Trim() ?? "";
             apellido = apellido?.Trim() ?? "";
-            email = email?.Trim() ?? "";
 
             // Validar campos obligatorios
             if (string.IsNullOrWhiteSpace(nombre) ||
-                string.IsNullOrWhiteSpace(apellido) ||
-                string.IsNullOrWhiteSpace(email))
+                string.IsNullOrWhiteSpace(apellido))
             {
-                TempData["Error"] = "Todos los campos son obligatorios.";
+                TempData["Error"] = "El nombre y apellido son obligatorios.";
                 return RedirectToAction(nameof(Index));
             }
 
             // Validar longitud
-            if (nombre.Length > 50 ||
-                apellido.Length > 50 ||
-                email.Length > 100)
+            if (nombre.Length > 50 || apellido.Length > 50)
             {
                 TempData["Error"] = "Los datos superan la longitud permitida.";
-
                 return RedirectToAction(nameof(Index));
             }
 
-            // Validar correo
-            var emailValidator =
-                new System.ComponentModel.DataAnnotations
-                    .EmailAddressAttribute();
-
-            if (!emailValidator.IsValid(email))
-            {
-                TempData["Error"] = "Ingresá un correo electrónico válido.";
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            // Verificar que el correo no esté registrado
-            // por otro usuario
-            bool existe = await _context.Usuarios.AnyAsync(u =>
-                u.email == email &&
-                u.id_Usuario != idUsuario);
-
-            if (existe)
-            {
-                TempData["Error"] = "Este correo ya pertenece a otro usuario.";
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            // Actualizar únicamente los campos permitidos
+            // Actualizar únicamente nombre y apellido
             usuario.nombre = nombre;
             usuario.apellido = apellido;
-            usuario.email = email;
 
             await _context.SaveChangesAsync();
 
-            // Actualizar el nombre y correo de la sesión
+            // Actualizar el nombre en la sesión
             var claims = User.Claims
-                .Where(c =>
-                    c.Type != ClaimTypes.Name &&
-                    c.Type != ClaimTypes.Email)
+                .Where(c => c.Type != ClaimTypes.Name)
                 .ToList();
 
             claims.Add(new Claim(
                 ClaimTypes.Name,
                 usuario.nombre + " " + usuario.apellido));
-
-            claims.Add(new Claim(
-                ClaimTypes.Email,
-                usuario.email));
 
             var identidad = new ClaimsIdentity(
                 claims,
@@ -292,10 +255,12 @@ namespace CentroDeCopias.Controllers
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 principal);
 
-            TempData["Mensaje"] = "Información personal actualizada correctamente.";
+            TempData["Mensaje"] =
+                "Información personal actualizada correctamente.";
 
             return RedirectToAction(nameof(Index));
         }
+
 
     }
 }
