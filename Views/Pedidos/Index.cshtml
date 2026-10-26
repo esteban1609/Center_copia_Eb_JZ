@@ -1,3 +1,4 @@
+
 @model IEnumerable<CentroDeCopias.Models.Pedido>
 
 @{
@@ -8,47 +9,122 @@
 
 @if (TempData["Error"] != null)
 {
-    <div class="alert alert-danger">@TempData["Error"]</div>
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
 }
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Nuevo pedido</a>
+    <a asp-action="Create" class="btn btn-primary">
+        Nuevo pedido
+    </a>
 </p>
 
 @if (User.IsInRole("Admin"))
 {
     <div class="row g-2 mb-4 align-items-end">
+
         <div class="col-md-4">
             <label class="form-label">Buscar por nombre</label>
-            <input type="text" id="filtroNombre" class="form-control" placeholder="Nombre o apellido del cliente" />
+            <input type="text"
+                   id="filtroNombre"
+                   class="form-control"
+                   placeholder="Nombre o apellido del cliente" />
         </div>
+
         <div class="col-md-3">
             <label class="form-label">Estado</label>
             <select id="filtroEstado" class="form-control">
                 <option value="">Todos</option>
+
                 @foreach (var est in (string[])ViewBag.Estados)
                 {
                     <option value="@est">@est</option>
                 }
             </select>
         </div>
+
         <div class="col-md-2">
             <label class="form-label">Desde</label>
-            <input type="date" id="filtroDesde" class="form-control" />
+            <input type="date"
+                   id="filtroDesde"
+                   class="form-control" />
         </div>
+
         <div class="col-md-2">
             <label class="form-label">Hasta</label>
-            <input type="date" id="filtroHasta" class="form-control" />
+            <input type="date"
+                   id="filtroHasta"
+                   class="form-control" />
         </div>
+
         <div class="col-md-1">
-            <button type="button" id="limpiarFiltros" class="btn btn-outline-secondary w-100">Limpiar</button>
+            <button type="button"
+                    id="limpiarFiltros"
+                    class="btn btn-outline-secondary w-100">
+                Limpiar
+            </button>
         </div>
+
     </div>
 }
 
+<!-- LISTADO DE PEDIDOS -->
 <div id="contenedor-pedidos">
     @await Html.PartialAsync("_PedidosTable", Model)
 </div>
+
+<!-- PAGINACIÓN -->
+@if (ViewBag.TotalPaginas > 1)
+{
+    <nav id="paginacion-pedidos"
+         aria-label="Paginación de pedidos"
+         class="mt-4">
+
+        <ul class="pagination justify-content-center">
+
+            <!-- ANTERIOR -->
+            <li class="page-item @(ViewBag.PaginaActual == 1 ? "disabled" : "")">
+
+                <a class="page-link"
+                   asp-controller="Pedidos"
+                   asp-action="Index"
+                   asp-route-pagina="@(ViewBag.PaginaActual - 1)">
+                    Anterior
+                </a>
+
+            </li>
+
+            <!-- NÚMEROS DE PÁGINA -->
+            @for (int i = 1; i <= ViewBag.TotalPaginas; i++)
+            {
+                <li class="page-item @(i == ViewBag.PaginaActual ? "active" : "")">
+
+                    <a class="page-link"
+                       asp-controller="Pedidos"
+                       asp-action="Index"
+                       asp-route-pagina="@i">
+                        @i
+                    </a>
+
+                </li>
+            }
+
+            <!-- SIGUIENTE -->
+            <li class="page-item @(ViewBag.PaginaActual == ViewBag.TotalPaginas ? "disabled" : "")">
+
+                <a class="page-link"
+                   asp-controller="Pedidos"
+                   asp-action="Index"
+                   asp-route-pagina="@(ViewBag.PaginaActual + 1)">
+                    Siguiente
+                </a>
+
+            </li>
+
+        </ul>
+    </nav>
+}
 
 @if (User.IsInRole("Admin"))
 {
@@ -60,6 +136,8 @@
             const hasta = document.getElementById('filtroHasta');
             const contenedor = document.getElementById('contenedor-pedidos');
             const limpiar = document.getElementById('limpiarFiltros');
+            const paginacion = document.getElementById('paginacion-pedidos');
+
             let timeoutId;
 
             function buscarConDebounce() {
@@ -74,8 +152,21 @@
                     desde: desde.value,
                     hasta: hasta.value
                 });
+
                 const resp = await fetch(`/Pedidos/Buscar?${params}`);
+
+                if (!resp.ok) {
+                    console.error('Error al buscar pedidos');
+                    return;
+                }
+
                 contenedor.innerHTML = await resp.text();
+
+                // Ocultar la paginación normal al mostrar
+                // resultados obtenidos mediante AJAX.
+                if (paginacion) {
+                    paginacion.style.display = 'none';
+                }
             }
 
             nombre.addEventListener('input', buscarConDebounce);
@@ -84,11 +175,15 @@
             hasta.addEventListener('change', buscar);
 
             limpiar.addEventListener('click', () => {
+                clearTimeout(timeoutId);
+
                 nombre.value = '';
                 estado.value = '';
                 desde.value = '';
                 hasta.value = '';
-                buscar();
+
+                // Volver al listado paginado normal.
+                window.location.href = '/Pedidos?pagina=1';
             });
         </script>
     }

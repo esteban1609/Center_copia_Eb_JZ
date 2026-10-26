@@ -17,24 +17,41 @@ namespace CentroDeCopias.Controllers
             _context = context;
         }
 
+
         // GET: Usuarios
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pagina = 1)
         {
+            const int tamanoPagina = 10;
+
+            if (pagina < 1)
+                pagina = 1;
+
+            // Obtener la cantidad total de usuarios
+            int totalUsuarios = await _context.Usuarios.CountAsync();
+
+            // Calcular la cantidad de páginas
+            int totalPaginas = (int)Math.Ceiling(
+                totalUsuarios / (double)tamanoPagina);
+
+            if (totalPaginas > 0 && pagina > totalPaginas)
+                pagina = totalPaginas;
+
+            // Obtener los usuarios de la página actual
             var usuarios = await _context.Usuarios
-                .AsNoTracking()
                 .OrderBy(u => u.apellido)
                 .ThenBy(u => u.nombre)
+                .ThenBy(u => u.id_Usuario)
+                .Skip((pagina - 1) * tamanoPagina)
+                .Take(tamanoPagina)
                 .ToListAsync();
 
-            // Contadores
-            ViewBag.TotalUsuarios = usuarios.Count;
-
-            ViewBag.UsuariosActivos = usuarios.Count(u => u.activo);
-
-            ViewBag.UsuariosInactivos = usuarios.Count(u => !u.activo);
+            // Datos para la paginación
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = totalPaginas;
 
             return View(usuarios);
         }
+
 
 
 

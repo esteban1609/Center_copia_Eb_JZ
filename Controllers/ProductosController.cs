@@ -17,12 +17,40 @@ namespace CentroDeCopias.Controllers
             _env = env;
         }
 
+
+
         // GET: Productos
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pagina = 1)
         {
-            var productos = await _context.Productos.ToListAsync();
+            const int tamanoPagina = 10;
+
+            if (pagina < 1)
+                pagina = 1;
+
+            // Obtener la cantidad total de productos
+            int totalProductos = await _context.Productos.CountAsync();
+
+            // Calcular el total de páginas
+            int totalPaginas = (int)Math.Ceiling(
+                totalProductos / (double)tamanoPagina);
+
+            if (totalPaginas > 0 && pagina > totalPaginas)
+                pagina = totalPaginas;
+
+            // Obtener únicamente los productos de la página actual
+            var productos = await _context.Productos
+                .OrderBy(p => p.IdProducto)
+                .Skip((pagina - 1) * tamanoPagina)
+                .Take(tamanoPagina)
+                .ToListAsync();
+
+            // Enviar información de paginación a la vista
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = totalPaginas;
+
             return View(productos);
         }
+
 
         // GET: Productos/Buscar?q=texto  (llamado por AJAX)
         [HttpGet]
@@ -138,7 +166,7 @@ namespace CentroDeCopias.Controllers
             if (string.IsNullOrEmpty(rutaImagen)) return;
 
             var rutaFisica = Path.Combine(_env.WebRootPath, rutaImagen.TrimStart('/'));
-            
+
             if (System.IO.File.Exists(rutaFisica))
             {
                 System.IO.File.Delete(rutaFisica);

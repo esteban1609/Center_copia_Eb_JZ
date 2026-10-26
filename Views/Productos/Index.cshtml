@@ -1,3 +1,4 @@
+
 @model IEnumerable<CentroDeCopias.Models.Producto>
 
 @{
@@ -9,22 +10,74 @@
 @if (User.IsInRole("Admin"))
 {
     <p>
-        <a asp-action="Create" class="btn btn-success">+ Nuevo producto</a>
+        <a asp-action="Create" class="btn btn-success">
+            + Nuevo producto
+        </a>
     </p>
 }
 
 <div class="form-group mb-4">
-    <input type="text" id="buscador" class="form-control" placeholder="Buscar productos..." autocomplete="off" />
+    <input type="text"
+           id="buscador"
+           class="form-control"
+           placeholder="Buscar productos..."
+           autocomplete="off" />
 </div>
 
+<!-- TARJETAS DE PRODUCTOS -->
 <div id="contenedor-productos">
     @await Html.PartialAsync("_ProductosCards", Model)
 </div>
+
+<!-- PAGINACIÓN -->
+@if (ViewBag.TotalPaginas > 1)
+{
+    <nav id="paginacion-productos"
+         aria-label="Paginación de productos"
+         class="mt-4">
+
+        <ul class="pagination justify-content-center">
+
+            <!-- ANTERIOR -->
+            <li class="page-item @(ViewBag.PaginaActual == 1 ? "disabled" : "")">
+                <a class="page-link"
+                   asp-action="Index"
+                   asp-route-pagina="@(ViewBag.PaginaActual - 1)">
+                    Anterior
+                </a>
+            </li>
+
+            <!-- NÚMEROS DE PÁGINA -->
+            @for (int i = 1; i <= ViewBag.TotalPaginas; i++)
+            {
+                <li class="page-item @(i == ViewBag.PaginaActual ? "active" : "")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-pagina="@i">
+                        @i
+                    </a>
+                </li>
+            }
+
+            <!-- SIGUIENTE -->
+            <li class="page-item @(ViewBag.PaginaActual == ViewBag.TotalPaginas ? "disabled" : "")">
+                <a class="page-link"
+                   asp-action="Index"
+                   asp-route-pagina="@(ViewBag.PaginaActual + 1)">
+                    Siguiente
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+}
 
 @section Scripts {
     <script>
         const input = document.getElementById('buscador');
         const contenedor = document.getElementById('contenedor-productos');
+        const paginacion = document.getElementById('paginacion-productos');
+
         let timeoutId;
 
         input.addEventListener('input', () => {
@@ -34,7 +87,16 @@
 
         async function buscar(texto) {
             const resp = await fetch(`/Productos/Buscar?q=${encodeURIComponent(texto)}`);
+            if (!resp.ok) return;
             contenedor.innerHTML = await resp.text();
+
+            // Ocultar paginación mientras se utiliza el buscador
+            if (paginacion) {
+                paginacion.classList.toggle(
+                    'd-none',
+                    texto.trim().length > 0
+                );
+            }
         }
     </script>
 }

@@ -25,65 +25,8 @@
 
         <a asp-action="Create"
            class="btn btn-primary px-4">
-
             + Nuevo usuario
         </a>
-
-    </div>
-
-    <!-- TARJETAS DE RESUMEN -->
-    <div class="row g-3 mb-4">
-
-        <!-- TOTAL -->
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-                <div class="card-body p-4">
-
-                    <p class="text-muted mb-2">
-                        Total de usuarios
-                    </p>
-
-                    <h3 class="fw-bold mb-0">
-                        @ViewBag.TotalUsuarios
-                    </h3>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- ACTIVOS -->
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-                <div class="card-body p-4">
-
-                    <p class="text-muted mb-2">
-                        Usuarios activos
-                    </p>
-
-                    <h3 class="fw-bold text-success mb-0">
-                        @ViewBag.UsuariosActivos
-                    </h3>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- INACTIVOS -->
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-                <div class="card-body p-4">
-
-                    <p class="text-muted mb-2">
-                        Usuarios inactivos
-                    </p>
-
-                    <h3 class="fw-bold text-danger mb-0">
-                        @ViewBag.UsuariosInactivos
-                    </h3>
-
-                </div>
-            </div>
-        </div>
 
     </div>
 
@@ -98,10 +41,6 @@
                 <h5 class="fw-bold mb-0">
                     Listado de usuarios
                 </h5>
-
-                <span class="text-muted small">
-                    @ViewBag.TotalUsuarios registros
-                </span>
 
             </div>
 
@@ -208,7 +147,6 @@
                                             <a asp-action="Edit"
                                                asp-route-id="@usuario.id_Usuario"
                                                class="btn btn-outline-primary btn-sm">
-
                                                 Editar
                                             </a>
 
@@ -218,7 +156,6 @@
                                                         class="btn btn-outline-danger btn-sm"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#modalDesactivar-@usuario.id_Usuario">
-
                                                     Desactivar
                                                 </button>
                                             }
@@ -233,7 +170,6 @@
 
                                                     <button type="submit"
                                                             class="btn btn-outline-success btn-sm">
-
                                                         Reactivar
                                                     </button>
 
@@ -257,6 +193,58 @@
         </div>
 
     </div>
+
+    <!-- PAGINACIÓN DE USUARIOS -->
+    @if (ViewBag.TotalPaginas > 1)
+    {
+        <nav aria-label="Paginación de usuarios"
+             class="mt-4">
+
+            <ul class="pagination justify-content-center">
+
+                <!-- ANTERIOR -->
+                <li class="page-item @(ViewBag.PaginaActual == 1 ? "disabled" : "")">
+
+                    <a class="page-link"
+                       asp-controller="Usuario"
+                       asp-action="Index"
+                       asp-route-pagina="@(ViewBag.PaginaActual - 1)">
+                        Anterior
+                    </a>
+
+                </li>
+
+                <!-- NÚMEROS DE PÁGINA -->
+                @for (int i = 1; i <= ViewBag.TotalPaginas; i++)
+                {
+                    <li class="page-item @(i == ViewBag.PaginaActual ? "active" : "")">
+
+                        <a class="page-link"
+                           asp-controller="Usuario"
+                           asp-action="Index"
+                           asp-route-pagina="@i">
+                            @i
+                        </a>
+
+                    </li>
+                }
+
+                <!-- SIGUIENTE -->
+                <li class="page-item @(ViewBag.PaginaActual == ViewBag.TotalPaginas ? "disabled" : "")">
+
+                    <a class="page-link"
+                       asp-controller="Usuario"
+                       asp-action="Index"
+                       asp-route-pagina="@(ViewBag.PaginaActual + 1)">
+                        Siguiente
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </nav>
+    }
 
     <!-- MODALES PARA DESACTIVAR USUARIOS -->
     @foreach (var usuario in Model.Where(u => u.activo))

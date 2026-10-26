@@ -20,12 +20,41 @@ namespace CentroDeCopias.Controllers
 
         [Authorize]
         // GET: Pedidos
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pagina = 1)
         {
-            var pedidos = await ObtenerPedidosFiltrados(null, null, null, null);
+            const int tamanoPagina = 10;
+
+            if (pagina < 1)
+                pagina = 1;
+
+            // Obtener los pedidos con los filtros existentes
+            var pedidos = await ObtenerPedidosFiltrados(
+                null, null, null, null);
+
+            // Cantidad total de pedidos filtrados
+            int totalPedidos = pedidos.Count();
+
+            // Calcular cantidad de páginas
+            int totalPaginas = (int)Math.Ceiling(
+                totalPedidos / (double)tamanoPagina);
+
+            if (totalPaginas > 0 && pagina > totalPaginas)
+                pagina = totalPaginas;
+
+            // Obtener los pedidos de la página actual
+            var pedidosPaginados = pedidos
+                .OrderByDescending(p => p.fecha)
+                .ThenByDescending(p => p.id_pedido)
+                .Skip((pagina - 1) * tamanoPagina)
+                .Take(tamanoPagina)
+                .ToList();
+
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = totalPaginas;
 
             ViewBag.Estados = EstadosValidos;
-            return View(pedidos);
+
+            return View(pedidosPaginados);
         }
 
         // GET: Pedidos/Details/5
@@ -163,7 +192,7 @@ namespace CentroDeCopias.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        
+
 
         // POST: Pedidos/Confirmar/5
         [HttpPost]
@@ -299,51 +328,51 @@ namespace CentroDeCopias.Controllers
         }
 
         // GET: Pedidos/Buscar
-[HttpGet]
-public async Task<IActionResult> Buscar(string? nombre, string? estado, DateTime? desde, DateTime? hasta)
-{
-    var pedidos = await ObtenerPedidosFiltrados(nombre, estado, desde, hasta);
-    return PartialView("_PedidosTable", pedidos);
-}
-
-private async Task<List<Pedido>> ObtenerPedidosFiltrados(string? nombre, string? estado, DateTime? desde, DateTime? hasta)
-{
-    IQueryable<Pedido> query = _context.Pedidos.Include(p => p.Usuario);
-
-    if (!User.IsInRole("Admin"))
-    {
-        query = query.Where(p => p.id_Usuario == UsuarioActualId);
-    }
-    else
-    {
-        if (!string.IsNullOrWhiteSpace(nombre))
+        [HttpGet]
+        public async Task<IActionResult> Buscar(string? nombre, string? estado, DateTime? desde, DateTime? hasta)
         {
-            query = query.Where(p =>
-                p.Usuario.nombre.Contains(nombre) ||
-                p.Usuario.apellido.Contains(nombre));
+            var pedidos = await ObtenerPedidosFiltrados(nombre, estado, desde, hasta);
+            return PartialView("_PedidosTable", pedidos);
         }
 
-        if (!string.IsNullOrWhiteSpace(estado))
+        private async Task<List<Pedido>> ObtenerPedidosFiltrados(string? nombre, string? estado, DateTime? desde, DateTime? hasta)
         {
-            query = query.Where(p => p.estado == estado);
+            IQueryable<Pedido> query = _context.Pedidos.Include(p => p.Usuario);
+
+            if (!User.IsInRole("Admin"))
+            {
+                query = query.Where(p => p.id_Usuario == UsuarioActualId);
+            }
+            else
+            {
+                if (!string.IsNullOrWhiteSpace(nombre))
+                {
+                    query = query.Where(p =>
+                        p.Usuario.nombre.Contains(nombre) ||
+                        p.Usuario.apellido.Contains(nombre));
+                }
+
+                if (!string.IsNullOrWhiteSpace(estado))
+                {
+                    query = query.Where(p => p.estado == estado);
+                }
+
+                if (desde.HasValue)
+                {
+                    query = query.Where(p => p.fecha >= desde.Value.Date);
+                }
+
+                if (hasta.HasValue)
+                {
+                    var hastaFin = hasta.Value.Date.AddDays(1).AddTicks(-1);
+                    query = query.Where(p => p.fecha <= hastaFin);
+                }
+            }
+
+            return await query.OrderByDescending(p => p.fecha).ToListAsync();
         }
 
-        if (desde.HasValue)
-        {
-            query = query.Where(p => p.fecha >= desde.Value.Date);
-        }
 
-        if (hasta.HasValue)
-        {
-            var hastaFin = hasta.Value.Date.AddDays(1).AddTicks(-1);
-            query = query.Where(p => p.fecha <= hastaFin);
-        }
-    }
-
-    return await query.OrderByDescending(p => p.fecha).ToListAsync();
-}
-
-        
 
     }
 }

@@ -14,11 +14,40 @@ namespace CentroDeCopias.Controllers
             _context = context;
         }
 
+
         // GET: Stock
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pagina = 1)
         {
-            var stock = _context.Stocks.Include(s => s.Producto);
-            return View(await stock.ToListAsync());
+            const int tamanoPagina = 10;
+
+            if (pagina < 1)
+                pagina = 1;
+
+            // Obtener la cantidad total de registros
+            int totalStock = await _context.Stocks.CountAsync();
+
+            // Calcular la cantidad de páginas
+            int totalPaginas = (int)Math.Ceiling(
+                totalStock / (double)tamanoPagina);
+
+            if (totalPaginas > 0 && pagina > totalPaginas)
+                pagina = totalPaginas;
+
+            // Obtener los registros de la página actual
+            var stock = await _context.Stocks
+                .AsNoTracking()
+                .Include(s => s.Producto)
+                .OrderBy(s => s.Producto.Nombre)
+                .ThenBy(s => s.IdStock)
+                .Skip((pagina - 1) * tamanoPagina)
+                .Take(tamanoPagina)
+                .ToListAsync();
+
+            // Datos necesarios para la paginación
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = totalPaginas;
+
+            return View(stock);
         }
 
         // GET: Stock/Details/5
@@ -97,20 +126,20 @@ namespace CentroDeCopias.Controllers
         }
 
 
-    // GET: Stock/Buscar?q=texto
-    [HttpGet]
-    public async Task<IActionResult> Buscar(string q)
-    {
-        var query = _context.Stocks.Include(s => s.Producto).AsQueryable();
-
-        if (!string.IsNullOrWhiteSpace(q))
+        // GET: Stock/Buscar?q=texto
+        [HttpGet]
+        public async Task<IActionResult> Buscar(string q)
         {
-            query = query.Where(s => s.Producto.Nombre.Contains(q));
-        }
+            var query = _context.Stocks.Include(s => s.Producto).AsQueryable();
 
-        var stock = await query.ToListAsync();
-        return PartialView("_StockTable", stock);
-    }
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                query = query.Where(s => s.Producto.Nombre.Contains(q));
+            }
+
+            var stock = await query.ToListAsync();
+            return PartialView("_StockTable", stock);
+        }
 
 
 

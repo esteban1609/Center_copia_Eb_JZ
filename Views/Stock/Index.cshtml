@@ -1,3 +1,4 @@
+
 @model IEnumerable<CentroDeCopias.Models.Stock>
 
 @{
@@ -7,31 +8,115 @@
 <h1>Stock</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Nuevo registro de stock</a>
+    <a asp-action="Create" class="btn btn-primary">
+        Nuevo registro de stock
+    </a>
 </p>
 
+<!-- BUSCADOR -->
 <div class="form-group mb-4">
-    <input type="text" id="buscadorStock" class="form-control" placeholder="Buscar por producto..." autocomplete="off" />
+    <input type="text"
+           id="buscadorStock"
+           class="form-control"
+           placeholder="Buscar por producto..."
+           autocomplete="off" />
 </div>
 
+<!-- TABLA DE STOCK -->
 <div id="contenedor-stock">
     @await Html.PartialAsync("_StockTable", Model)
 </div>
+
+<!-- PAGINACIÓN -->
+@if (ViewBag.TotalPaginas > 1)
+{
+    <nav id="paginacion-stock"
+         aria-label="Paginación de stock"
+         class="mt-4">
+
+        <ul class="pagination justify-content-center">
+
+            <!-- ANTERIOR -->
+            <li class="page-item @(ViewBag.PaginaActual == 1 ? "disabled" : "")">
+
+                <a class="page-link"
+                   asp-controller="Stock"
+                   asp-action="Index"
+                   asp-route-pagina="@(ViewBag.PaginaActual - 1)">
+                    Anterior
+                </a>
+
+            </li>
+
+            <!-- NÚMEROS DE PÁGINA -->
+            @for (int i = 1; i <= ViewBag.TotalPaginas; i++)
+            {
+                <li class="page-item @(i == ViewBag.PaginaActual ? "active" : "")">
+
+                    <a class="page-link"
+                       asp-controller="Stock"
+                       asp-action="Index"
+                       asp-route-pagina="@i">
+                        @i
+                    </a>
+
+                </li>
+            }
+
+            <!-- SIGUIENTE -->
+            <li class="page-item @(ViewBag.PaginaActual == ViewBag.TotalPaginas ? "disabled" : "")">
+
+                <a class="page-link"
+                   asp-controller="Stock"
+                   asp-action="Index"
+                   asp-route-pagina="@(ViewBag.PaginaActual + 1)">
+                    Siguiente
+                </a>
+
+            </li>
+
+        </ul>
+
+    </nav>
+}
 
 @section Scripts {
     <script>
         const input = document.getElementById('buscadorStock');
         const contenedor = document.getElementById('contenedor-stock');
+        const paginacion = document.getElementById('paginacion-stock');
+
         let timeoutId;
 
         input.addEventListener('input', () => {
             clearTimeout(timeoutId);
+
             timeoutId = setTimeout(() => buscar(input.value), 300);
         });
 
         async function buscar(texto) {
-            const resp = await fetch(`/Stock/Buscar?q=${encodeURIComponent(texto)}`);
+
+            // Si se borra la búsqueda, volver a la primera página
+            if (texto.trim() === '') {
+                window.location.href = '/Stock?pagina=1';
+                return;
+            }
+
+            const resp = await fetch(
+                `/Stock/Buscar?q=${encodeURIComponent(texto)}`
+            );
+
+            if (!resp.ok) {
+                console.error('Error al buscar stock');
+                return;
+            }
+
             contenedor.innerHTML = await resp.text();
+
+            // Ocultar paginación al mostrar resultados AJAX
+            if (paginacion) {
+                paginacion.style.display = 'none';
+            }
         }
     </script>
 }
