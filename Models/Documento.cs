@@ -39,5 +39,6 @@ namespace CentroDeCopias.Models
         public string TamanoHoja { get; set; } = "A4";
         public string Anillado { get; set; } = "Ninguno";
         public decimal Precio { get; set; }
+        public int Paginas { get; set; }
     }
 }

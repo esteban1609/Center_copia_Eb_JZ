@@ -92,6 +92,9 @@ namespace Center_copia_EB_JZ.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
+                    b.Property<int>("Paginas")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Precio")
                         .HasColumnType("decimal(65,30)");
 

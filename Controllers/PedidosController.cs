@@ -242,11 +242,6 @@ namespace CentroDeCopias.Controllers
 
             if (pedido.id_Usuario != UsuarioActualId) return Forbid();
 
-            if (pedido.estado != "Pendiente")
-            {
-                TempData["Error"] = "Solo podés modificar pedidos en estado Pendiente.";
-                return RedirectToAction(nameof(Details), new { id });
-            }
 
             return View(pedido);
         }
