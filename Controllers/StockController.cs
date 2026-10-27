@@ -67,25 +67,106 @@ namespace CentroDeCopias.Controllers
         // GET: Stock/Create
         public IActionResult Create()
         {
-            ViewBag.IdProducto = new SelectList(_context.Productos, "IdProducto", "Nombre");
+            //ViewBag.IdProducto = new SelectList(_context.Productos, "IdProducto", "Nombre");
             return View();
         }
 
-        // POST: Stock/Create
+        //GET: Stock/Buscador-Select
+        //Busca los productos a medida que vaya escribiendo en el select
+        [HttpGet]
+        public async Task<IActionResult> BuscarProductos(string? termino)
+        {
+            if (string.IsNullOrWhiteSpace(termino))
+                return Json(Array.Empty<object>());
+
+            termino = termino.Trim();
+
+            var productos = await _context.Productos
+                .AsNoTracking()
+                .Where(p =>
+                    p.activo &&
+                    p.Nombre.Contains(termino) &&
+                    !_context.Stocks.Any(s =>
+                        s.IdProducto == p.IdProducto))
+                .OrderBy(p => p.Nombre)
+                .Select(p => new
+                {
+                    id = p.IdProducto,
+                    nombre = p.Nombre
+                })
+                .Take(10)
+                .ToListAsync();
+
+            return Json(productos);
+        }
+
+
+        // // POST: Stock/Create
+        // [HttpPost]
+        // [ValidateAntiForgeryToken]
+        // public async Task<IActionResult> Create([Bind("IdProducto,CantidadDisponible,StockMinimo")] Stock stock)
+        // {
+        //     if (ModelState.IsValid)
+        //     {
+        //         stock.UltimaActualizacion = DateTime.Now;
+        //         _context.Add(stock);
+        //         await _context.SaveChangesAsync();
+        //         return RedirectToAction(nameof(Index));
+        //     }
+        //     ViewBag.IdProducto = new SelectList(_context.Productos, "IdProducto", "Nombre", stock.IdProducto);
+        //     return View(stock);
+        // }
+
+
+
+        //POST: Stock/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdProducto,CantidadDisponible,StockMinimo")] Stock stock)
+        public async Task<IActionResult> Create(
+            [Bind("IdProducto,CantidadDisponible,StockMinimo")] Stock stock)
         {
-            if (ModelState.IsValid)
+            if (stock.CantidadDisponible < 0 || stock.StockMinimo < 0)
             {
-                stock.UltimaActualizacion = DateTime.Now;
-                _context.Add(stock);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError(
+                    "",
+                    "Las cantidades no pueden ser negativas."
+                );
             }
-            ViewBag.IdProducto = new SelectList(_context.Productos, "IdProducto", "Nombre", stock.IdProducto);
-            return View(stock);
+
+            bool productoValido = await _context.Productos
+                .AnyAsync(p =>
+                    p.IdProducto == stock.IdProducto && p.activo);
+
+            if (!productoValido)
+            {
+                ModelState.AddModelError(
+                    "IdProducto",
+                    "Seleccioná un producto válido."
+                );
+            }
+
+            bool yaTieneStock = await _context.Stocks
+                .AnyAsync(s => s.IdProducto == stock.IdProducto);
+
+            if (yaTieneStock)
+            {
+                ModelState.AddModelError(
+                    "IdProducto",
+                    "Este producto ya tiene un registro de stock."
+                );
+            }
+
+            if (!ModelState.IsValid)
+                return View(stock);
+
+            stock.UltimaActualizacion = DateTime.Now;
+
+            _context.Stocks.Add(stock);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
+
 
         // GET: Stock/Edit/5
         public async Task<IActionResult> Edit(int? id)

@@ -1,3 +1,4 @@
+
 @model CentroDeCopias.Models.Stock
 
 @{
@@ -6,23 +7,127 @@
 
 <h1>Nuevo stock</h1>
 
-<form asp-action="Create">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="form-group">
-        <label asp-for="IdProducto" class="control-label">Producto</label>
-        <select asp-for="IdProducto" class="form-control" asp-items="ViewBag.IdProducto"></select>
+<form asp-action="Create" method="post">
+
+    <div asp-validation-summary="ModelOnly"
+         class="text-danger"></div>
+
+    <!-- PRODUCTO CON SELECT2 -->
+    <div class="form-group mb-3">
+
+        <label asp-for="IdProducto"
+               class="control-label">
+            Producto
+        </label>
+
+        <select asp-for="IdProducto"
+                id="IdProducto"
+                class="form-control"
+                style="width: 100%;">
+
+            <option value="">Buscar producto...</option>
+
+        </select>
+
+        <span asp-validation-for="IdProducto"
+              class="text-danger"></span>
+
     </div>
-    <div class="form-group">
-        <label asp-for="CantidadDisponible" class="control-label"></label>
-        <input asp-for="CantidadDisponible" class="form-control" />
+
+    <!-- CANTIDAD DISPONIBLE -->
+    <div class="form-group mb-3">
+
+        <label asp-for="CantidadDisponible"
+               class="control-label">
+            Cantidad disponible
+        </label>
+
+        <input asp-for="CantidadDisponible"
+               class="form-control"
+               min="0" />
+
+        <span asp-validation-for="CantidadDisponible"
+              class="text-danger"></span>
+
     </div>
-    <div class="form-group">
-        <label asp-for="StockMinimo" class="control-label"></label>
-        <input asp-for="StockMinimo" class="form-control" />
+
+    <!-- STOCK MÍNIMO -->
+    <div class="form-group mb-3">
+
+        <label asp-for="StockMinimo"
+               class="control-label">
+            Stock mínimo
+        </label>
+
+        <input asp-for="StockMinimo"
+               class="form-control"
+               min="0" />
+
+        <span asp-validation-for="StockMinimo"
+              class="text-danger"></span>
+
     </div>
+
     <div class="form-group">
-        <input type="submit" value="Guardar" class="btn btn-primary" />
+
+        <input type="submit"
+               value="Guardar"
+               class="btn btn-primary" />
+
+        <a asp-action="Index"
+           class="btn btn-secondary">
+            Volver a la lista
+        </a>
+
     </div>
+
 </form>
 
-<a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+@section Scripts {
+
+    <!-- ESTILOS SELECT2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- SELECT2 -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <partial name="_ValidationScriptsPartial"/>
+
+    <script>
+        $(document).ready(function () {
+
+            $('#IdProducto').select2({
+
+                placeholder: 'Buscar producto...',
+                minimumInputLength: 2,
+                width: '100%',
+
+                ajax: {
+                    url: '@Url.Action("BuscarProductos", "Stock")',
+                    dataType: 'json',
+                    delay: 300,
+
+                    data: function (params) {
+                        return {
+                            termino: params.term
+                        };
+                    },
+
+                    processResults: function (data) {
+                        return {
+                            results: data.map(function (producto) {
+                                return {
+                                    id: producto.id,
+                                    text: producto.nombre
+                                };
+                            })
+                        };
+                    }
+                }
+            });
+        });
+    </script>
+}
