@@ -1,6 +1,46 @@
+/* ==========================================================================
+   BASE
+   ========================================================================== */
+ 
 html {
-  font-size: 14px;
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
+ 
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+ 
+body {
+    margin-bottom: 60px;
+    background-color: var(--cc-dark);
+    color: #e8e8f0;
+}
+ 
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+ 
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+ 
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus,
+.form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+ 
+ 
+/* ==========================================================================
+   VARIABLES DE COLOR (paleta Center Copia)
+   ========================================================================== */
+ 
 :root {
     --cc-magenta: #ec1e79;
     --cc-blue: #00aeef;
@@ -8,8 +48,117 @@ html {
     --cc-dark: #0a0e27;
     --cc-dark-2: #131a3a;
     --cc-gradient: linear-gradient(135deg, var(--cc-magenta) 0%, var(--cc-blue) 50%, var(--cc-yellow) 100%);
+ 
+    /* Overrides de variables internas de Bootstrap 5 */
+    --bs-body-bg: var(--cc-dark);
+    --bs-body-color: #e8e8f0;
+    --bs-table-bg: transparent;
+    --bs-table-color: #e8e8f0;
+    --bs-border-color: rgba(255, 255, 255, 0.1);
 }
-
+ 
+ 
+/* ==========================================================================
+   NAVBAR
+   ========================================================================== */
+ 
+.navbar-steam {
+    background: var(--cc-dark-2);
+    min-height: 75px;
+    padding: 8px 0;
+    border-bottom: 2px solid transparent;
+    border-image: var(--cc-gradient) 1;
+}
+ 
+.navbar-steam .nav-link {
+    color: #e8e8f0 !important;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+ 
+.navbar-steam .nav-link:hover {
+    color: var(--cc-yellow) !important;
+}
+ 
+.logo-steam {
+    width: 55px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+ 
+/* Íconos de notificaciones / configuración */
+.icono-navbar {
+    color: #e8e8f0;
+    font-size: 1.1rem;
+    background: transparent;
+    border: none;
+    padding: 5px;
+}
+ 
+.icono-navbar:hover {
+    color: var(--cc-yellow);
+}
+ 
+.icono-navbar:disabled {
+    opacity: 0.7;
+}
+ 
+/* Botón de perfil */
+.perfil-boton {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    border: none;
+}
+ 
+.perfil-boton:hover,
+.perfil-boton:focus {
+    color: var(--cc-blue);
+    background-color: #2a3b52;
+}
+ 
+.avatar-navbar {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 6px;
+    flex-shrink: 0;
+    background: #40516b;
+}
+ 
+.foto-navbar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+ 
+.perfil-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+ 
+.perfil-info strong {
+    font-size: 13px;
+}
+ 
+.perfil-info small {
+    font-size: 11px;
+    color: #a8b8cc;
+}
+ 
+ 
+/* ==========================================================================
+   HERO (Home)
+   ========================================================================== */
+ 
 .cc-hero {
     background: var(--cc-dark);
     background-image:
@@ -20,20 +169,69 @@ html {
     padding: 4rem 1.5rem;
     border-radius: 0 0 2rem 2rem;
 }
-
+ 
 .cc-hero h1 {
     font-weight: 800;
     font-size: 2.8rem;
     line-height: 1.1;
 }
-
+ 
 .cc-hero .cc-gradient-text {
     background: var(--cc-gradient);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
 }
-
+ 
+.cc-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-top: 3rem;
+}
+ 
+.cc-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+ 
+.cc-badge .icono {
+    font-size: 1.3rem;
+}
+ 
+ 
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+ 
+.cc-footer {
+    background: var(--cc-dark);
+    color: #fff;
+    padding: 3rem 1.5rem 1.5rem;
+    margin-top: 3rem;
+}
+ 
+.cc-footer h5 {
+    color: var(--cc-yellow);
+    font-weight: 700;
+}
+ 
+.cc-footer a {
+    color: #fff;
+    text-decoration: none;
+}
+ 
+.cc-footer a:hover {
+    color: var(--cc-blue);
+}
+ 
+ 
+/* ==========================================================================
+   BOTONES
+   ========================================================================== */
+ 
 .cc-btn-gradient {
     background: var(--cc-gradient);
     border: none;
@@ -44,51 +242,12 @@ html {
     display: inline-block;
     text-decoration: none;
 }
-
+ 
 .cc-btn-gradient:hover {
     color: #fff;
     opacity: 0.9;
 }
-
-.cc-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    margin-top: 3rem;
-}
-
-.cc-badge {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-}
-
-.cc-badge .icono {
-    font-size: 1.3rem;
-}
-
-.cc-footer {
-    background: var(--cc-dark);
-    color: #fff;
-    padding: 3rem 1.5rem 1.5rem;
-    margin-top: 3rem;
-}
-
-.cc-footer h5 {
-    color: var(--cc-yellow);
-    font-weight: 700;
-}
-
-.cc-footer a {
-    color: #fff;
-    text-decoration: none;
-}
-
-.cc-footer a:hover {
-    color: var(--cc-blue);
-}
-
+ 
 .cc-btn-whatsapp {
     background: #25d366;
     color: #fff;
@@ -98,253 +257,242 @@ html {
     display: inline-block;
     text-decoration: none;
 }
-
+ 
 .cc-btn-whatsapp:hover {
     color: #fff;
     opacity: 0.9;
 }
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  margin-bottom: 60px;
-}
-
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
-}
-
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
-}
-
-
-/* NAVBAR PRINCIPAL */
-
-.navbar-custom {
-    background-color: #172338;
-    padding: 14px 0;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
-}
-
-.navbar-custom .navbar-brand {
-    color: white;
-    font-size: 1.4rem;
-    letter-spacing: 0.3px;
-}
-
-.navbar-logo {
-    font-size: 1.7rem;
-}
-
-.navbar-custom .nav-link {
-    color: #cbd5e1;
-    font-weight: 500;
-    margin: 0 8px;
-    transition: color 0.2s ease;
-}
-
-.navbar-custom .nav-link:hover {
-    color: #60a5fa;
-}
-
-.navbar-custom .nav-link.active {
-    color: #ffffff;
-    font-weight: 600;
-}
-
-.navbar-custom .navbar-toggler {
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-.navbar-custom .navbar-toggler:focus {
-    box-shadow: 0 0 0 2px #60a5fa;
-}
-
-/* NAVBAR CENTER COPIA */
-
-.navbar-custom {
-    background: linear-gradient(90deg, #101b34, #203c67);
-    padding: 10px 0;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.18);
-}
-
-/* Logo */
-
-.logo-navbar {
-    width: 65px;
-    height: 65px;
-    object-fit: cover;
-    border-radius: 12px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-/* Nombre de la empresa */
-
-.nombre-empresa {
-    font-size: 1.3rem;
+ 
+.btn-primary {
+    background: var(--cc-gradient) !important;
+    border: none !important;
     font-weight: 700;
-    color: white;
-    letter-spacing: 1px;
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
 }
-
-/* Enlaces */
-
-.navbar-custom .nav-link {
-    color: #e2e8f0;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: color 0.2s ease;
+ 
+.btn-primary:hover, .btn-primary:focus {
+    opacity: 0.9;
+    color: #fff;
 }
-
-.navbar-custom .nav-link:hover {
-    color: #ff299c;
+ 
+.btn-success {
+    background: var(--cc-blue) !important;
+    border: none !important;
+    border-radius: 50px;
+    font-weight: 700;
 }
-
-@media (max-width: 576px) {
-    .logo-navbar {
-        width: 50px;
-        height: 50px;
-    }
-
-    .nombre-empresa {
-        font-size: 1rem;
-    }
-}
-
-
-/* Navbar de una sola fila */
-.navbar-steam {
-    background: linear-gradient(90deg, #171d27, #203451);
-    min-height: 75px;
-    padding: 8px 0;
-}
-
-/* Logo a la izquierda */
-.logo-steam {
-    width: 55px;
-    height: 55px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-/* Enlaces */
-.navbar-steam .nav-link {
-    color: #e2e8f0;
+ 
+.btn-danger, .btn-outline-danger {
+    border-radius: 50px;
     font-weight: 600;
-    font-size: 14px;
 }
-
-.navbar-steam .nav-link:hover {
-    color: #48b8ff;
+ 
+.btn-secondary, .btn-outline-secondary {
+    border-radius: 50px;
+    font-weight: 600;
 }
-
-/* Campana y configuración */
-.icono-navbar {
-    color: #cbd5e1;
-    font-size: 20px;
-    border: none;
-    padding: 5px;
-}
-
-.icono-navbar:hover {
-    color: #48b8ff;
-}
-
-.icono-navbar:disabled {
-    color: #cbd5e1;
-    opacity: 0.7;
-}
-
-/* Perfil */
-.perfil-boton {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: white;
-    border: none;
-}
-
-.perfil-boton:hover,
-.perfil-boton:focus {
-    color: #48b8ff;
-    background-color: #2a3b52;
-}
-
-.avatar-navbar {
-    width: 38px;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #40516b;
-    border-radius: 5px;
-}
-
-.perfil-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.perfil-info strong {
-    font-size: 13px;
-}
-
-.perfil-info small {
-    font-size: 11px;
-    color: #a8b8cc;
-}
-
-
-/* Botón de registro */
-
+ 
 .btn-registro {
-    background-color: #1a9fff;
-    color: white;
-    border: none;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 8px 15px;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
+    background: var(--cc-magenta);
+    color: #fff;
+    border-radius: 50px;
+    font-weight: 700;
+    padding: 0.4rem 1.2rem;
 }
-
+ 
 .btn-registro:hover {
-    background-color: #47b7ff;
-    color: white;
+    background: var(--cc-magenta);
+    color: #fff;
+    opacity: 0.9;
 }
-
-
-/* Foto de perfil en el navbar */
-.avatar-navbar {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+ 
+ 
+/* ==========================================================================
+   TARJETAS
+   ========================================================================== */
+ 
+.card {
+    background: var(--cc-dark-2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e8e8f0;
+    border-radius: 1rem;
     overflow: hidden;
-    border-radius: 6px;
-    flex-shrink: 0;
 }
-
-.foto-navbar {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+ 
+.card-title {
+    color: #fff;
+    font-weight: 700;
+}
+ 
+.card:hover {
+    border-color: var(--cc-blue);
+    transition: border-color 0.2s;
+}
+ 
+/* Imagen de las tarjetas de producto */
+.card-img-top {
+    height: 130px;
+    object-fit: contain;
+    background: #fff;
+    padding: 0.75rem;
+}
+ 
+ 
+/* ==========================================================================
+   FORMULARIOS
+   ========================================================================== */
+ 
+.form-control, .form-select {
+    background: var(--cc-dark-2);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #e8e8f0;
+    border-radius: 0.5rem;
+}
+ 
+.form-control:focus, .form-select:focus {
+    background: var(--cc-dark-2);
+    color: #fff;
+    border-color: var(--cc-blue);
+    box-shadow: 0 0 0 0.2rem rgba(0, 174, 239, 0.25);
+}
+ 
+.form-control::placeholder {
+    color: rgba(232, 232, 240, 0.5);
+}
+ 
+label, .form-label {
+    color: #e8e8f0;
+    font-weight: 600;
+}
+ 
+.text-muted, .form-text, small {
+    color: #a0a0b8 !important;
+}
+ 
+.bg-light {
+    background: var(--cc-dark-2) !important;
+}
+ 
+.border {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+ 
+/* Botón nativo de <input type="file"> */
+input[type="file"].form-control::file-selector-button {
+    background: var(--cc-gradient);
+    color: #fff;
+    border: none;
+    border-radius: 0.4rem;
+    padding: 0.4rem 1rem;
+    font-weight: 600;
+    margin-right: 1rem;
+}
+ 
+input[type="file"].form-control::file-selector-button:hover {
+    opacity: 0.9;
+}
+ 
+ 
+/* ==========================================================================
+   TABLAS
+   ========================================================================== */
+ 
+.table {
+    color: #e8e8f0;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+ 
+.table thead {
+    background: var(--cc-dark-2);
+}
+ 
+.table thead th {
+    color: var(--cc-yellow);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+ 
+.table tbody tr {
+    border-color: rgba(255, 255, 255, 0.08);
+}
+ 
+.table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+ 
+.table td, .table th {
+    color: #e8e8f0 !important;
+}
+ 
+.table a {
+    color: var(--cc-blue);
+}
+ 
+.table a:hover {
+    color: var(--cc-yellow);
+}
+ 
+.table-danger {
+    --bs-table-bg: rgba(236, 30, 121, 0.15) !important;
+    color: #ffb3d1 !important;
+}
+ 
+/* thead con clase table-light (Bootstrap fuerza fondo claro por variable) */
+.table-light > * > * {
+    background-color: var(--cc-dark-2) !important;
+    color: var(--cc-yellow) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+ 
+ 
+/* ==========================================================================
+   ALERTAS Y BADGES
+   ========================================================================== */
+ 
+.alert-danger {
+    background: rgba(236, 30, 121, 0.15);
+    border-color: var(--cc-magenta);
+    color: #ffb3d1;
+}
+ 
+.alert-success {
+    background: rgba(0, 174, 239, 0.15);
+    border-color: var(--cc-blue);
+    color: #a3e7ff;
+}
+ 
+.badge.bg-light {
+    background-color: #e8e8f0 !important;
+    color: var(--cc-dark) !important;
+}
+ 
+ 
+/* ==========================================================================
+   LINKS Y DROPDOWN
+   ========================================================================== */
+ 
+a {
+    color: var(--cc-blue);
+}
+ 
+a:hover {
+    color: var(--cc-yellow);
+}
+ 
+.dropdown-menu {
+    background: var(--cc-dark-2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+ 
+.dropdown-item {
+    color: #e8e8f0;
+}
+ 
+.dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--cc-yellow);
+}
+ 
+.dropdown-divider {
+    border-color: rgba(255, 255, 255, 0.1);
 }

@@ -56,6 +56,10 @@
               "target": "Package",
               "version": "[9.0.2, )"
             },
+            "PdfPig": {
+              "target": "Package",
+              "version": "[0.1.16, )"
+            },
             "Pomelo.EntityFrameworkCore.MySql": {
               "target": "Package",
               "version": "[9.0.0, )"

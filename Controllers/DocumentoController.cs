@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CentroDeCopias.Models;
+using UglyToad.PdfPig;
 
 namespace CentroDeCopias.Controllers
 {
@@ -26,18 +27,21 @@ namespace CentroDeCopias.Controllers
         {
             return View();
         }
-        private decimal CalcularPrecioImpresion(int copias, bool color)
+        private decimal CalcularPrecioImpresion(int paginas, int copias, bool color, bool dobleFaz)
         {
+            int hojasPorCopia = dobleFaz ? (int)Math.Ceiling(paginas / 2.0) : paginas;
+            int hojasTotales = hojasPorCopia * copias;
+
             decimal precioPorHoja;
 
-            if (copias <= 20)
+            if (hojasTotales <= 20)
                 precioPorHoja = color ? 100 : 80;
-            else if (copias <= 100)
+            else if (hojasTotales <= 100)
                 precioPorHoja = color ? 70 : 60;
             else
                 precioPorHoja = color ? 50 : 40;
 
-            return precioPorHoja * copias;
+            return precioPorHoja * hojasTotales;
         }
 
         [HttpPost]
@@ -98,9 +102,11 @@ namespace CentroDeCopias.Controllers
             {
                 await archivo.CopyToAsync(stream);
             }
+            
+            int paginas = ContarPaginas(rutaFisica);
 
-            // TODO: definir precio real según copias/color/tamaño 
-            decimal precio = CalcularPrecioImpresion(copias, color);
+            // TODO: definir precio real según copias/color/tamaño/doble faz
+            decimal precio = CalcularPrecioImpresion(paginas, copias, color, dobleFaz);
 
             var documento = new Documento
             {
@@ -114,7 +120,8 @@ namespace CentroDeCopias.Controllers
                 DobleFaz = dobleFaz,
                 TamanoHoja = tamanoHoja,
                 Anillado = anillado,
-                Precio = precio
+                Precio = precio,
+                Paginas = paginas
             };
 
             _context.Documentos.Add(documento);
@@ -123,6 +130,12 @@ namespace CentroDeCopias.Controllers
 
             TempData["Mensaje"] = "Documento agregado a tu pedido";
             return RedirectToAction("Details", "Pedidos", new { id = pedido.id_pedido });
+        }
+
+        private int ContarPaginas(string rutaFisica)
+        {
+            using var pdf = PdfDocument.Open(rutaFisica);
+            return pdf.NumberOfPages;
         }
     }
 }
