@@ -1,4 +1,3 @@
-
 @model IEnumerable<CentroDeCopias.Models.Notificacion>
 
 @{
@@ -73,7 +72,7 @@
                 @foreach (var notificacion in Model)
                 {
                     <div class="border-bottom p-4
-                        @(notificacion.Leida ? "" : "bg-primary bg-opacity-10")">
+                                @(notificacion.Leida ? "" : "bg-primary bg-opacity-10")">
 
                         <div class="d-flex justify-content-between gap-3">
 
@@ -127,9 +126,8 @@
 
                                 @if (notificacion.id_pedido.HasValue)
                                 {
-                                    <a asp-action="IrAPedido"
-                                       asp-route-id="@notificacion.IdNotificacion"
-                                       class="btn btn-sm btn-outline-primary">
+                                    <a asp-action="IrAPedido" asp-route-id="@notificacion.IdNotificacion"
+                                        class="btn btn-sm btn-outline-primary">
                                         Ver pedido
                                     </a>
                                 }
@@ -139,12 +137,9 @@
                                     <form asp-action="MarcarLeida" method="post">
                                         @Html.AntiForgeryToken()
 
-                                        <input type="hidden"
-                                               name="id"
-                                               value="@notificacion.IdNotificacion" />
+                                        <input type="hidden" name="id" value="@notificacion.IdNotificacion" />
 
-                                        <button type="submit"
-                                                class="btn btn-sm btn-outline-secondary">
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">
                                             Marcar leída
                                         </button>
                                     </form>
@@ -157,6 +152,52 @@
             }
 
         </div>
+
     </div>
+
+
+    <!-- PAGINACIÓN -->
+    @if (ViewBag.TotalPaginas > 1)
+    {
+        <nav id="paginacion-notificaciones" aria-label="Paginación de notificaciones" class="mt-4">
+
+            <ul class="pagination justify-content-center">
+
+                <!-- ANTERIOR -->
+                <li class="page-item @(ViewBag.PaginaActual == 1 ? "disabled" : "")">
+
+                    <a class="page-link" asp-controller="Notificaciones" asp-action="Index"
+                        asp-route-pagina="@(ViewBag.PaginaActual - 1)">
+                        Anterior
+                    </a>
+
+                </li>
+
+                <!-- NÚMEROS DE PÁGINA -->
+                @for (int i = 1; i <= ViewBag.TotalPaginas; i++)
+                {
+                    <li class="page-item @(i == ViewBag.PaginaActual ? "active" : "")">
+
+                        <a class="page-link" asp-controller="Notificaciones" asp-action="Index" asp-route-pagina="@i">
+                            @i
+                        </a>
+
+                    </li>
+                }
+
+                <!-- SIGUIENTE -->
+                <li class="page-item @(ViewBag.PaginaActual == ViewBag.TotalPaginas ? "disabled" : "")">
+
+                    <a class="page-link" asp-controller="Notificaciones" asp-action="Index"
+                        asp-route-pagina="@(ViewBag.PaginaActual + 1)">
+                        Siguiente
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </nav>
+    }
 
 </div>

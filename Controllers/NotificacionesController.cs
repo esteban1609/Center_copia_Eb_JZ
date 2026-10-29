@@ -22,17 +22,48 @@ namespace CentroDeCopias.Controllers
                 ClaimTypes.NameIdentifier)!);
 
         // GET: Notificaciones
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pagina = 1)
         {
-            var notificaciones = await _context.Notificaciones
+            const int tamanoPagina = 1;
+
+            if (pagina < 1)
+                pagina = 1;
+
+            // Consultar solamente las notificaciones del usuario actual
+            var query = _context.Notificaciones
                 .AsNoTracking()
-                .Where(n => n.id_Usuario == UsuarioActualId)
+                .Where(n => n.id_Usuario == UsuarioActualId);
+
+            // Cantidad total de notificaciones del usuario
+            int totalNotificaciones = await query.CountAsync();
+
+            // Cantidad de notificaciones sin leer
+            int sinLeer = await query.CountAsync(n => !n.Leida);
+
+            // Calcular total de páginas
+            int totalPaginas = (int)Math.Ceiling(
+                totalNotificaciones / (double)tamanoPagina
+            );
+
+            // Evitar páginas fuera del rango
+            if (totalPaginas > 0 && pagina > totalPaginas)
+                pagina = totalPaginas;
+
+            // Obtener solamente las notificaciones de la página actual
+            var notificaciones = await query
                 .OrderBy(n => n.Leida)
                 .ThenByDescending(n => n.FechaCreacion)
+                .ThenByDescending(n => n.IdNotificacion)
+                .Skip((pagina - 1) * tamanoPagina)
+                .Take(tamanoPagina)
                 .ToListAsync();
 
-            ViewBag.TotalNotificaciones = notificaciones.Count;
-            ViewBag.SinLeer = notificaciones.Count(n => !n.Leida);
+            // Datos para la vista
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = totalPaginas;
+
+            ViewBag.TotalNotificaciones = totalNotificaciones;
+            ViewBag.SinLeer = sinLeer;
 
             return View(notificaciones);
         }
