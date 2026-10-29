@@ -1,12 +1,19 @@
-
-@model IEnumerable<CentroDeCopias.Models.Usuario>
-
 @{
     ViewData["Title"] = "Usuarios";
 }
 
-<div class="container py-4 py-lg-5"
-     style="max-width: 1250px;">
+<style>
+    [v-cloak] {
+        display: none !important;
+    }
+</style>
+
+<div id="appUsuarios" v-cloak class="container py-4 py-lg-5" style="max-width:1250px;">
+
+    <!-- TOKEN ANTIFALSIFICACIÓN -->
+    <form id="formToken" class="d-none">
+        @Html.AntiForgeryToken()
+    </form>
 
     <!-- ENCABEZADO -->
     <div class="d-flex justify-content-between
@@ -23,28 +30,43 @@
             </p>
         </div>
 
-        <a asp-action="Create"
-           class="btn btn-primary px-4">
+        <button type="button" class="btn btn-primary px-4" v-on:click="abrirCrear">
             + Nuevo usuario
-        </a>
+        </button>
+    </div>
 
+    <!-- MENSAJES -->
+    <div v-if="mensaje" class="alert" v-bind:class="esError ? 'alert-danger' : 'alert-success'">
+        {{ mensaje }}
     </div>
 
     <!-- LISTADO -->
     <div class="card border-0 shadow-sm rounded-4">
-
         <div class="card-body p-4">
 
             <div class="d-flex justify-content-between
-                        align-items-center flex-wrap gap-2 mb-4">
+                        align-items-center flex-wrap gap-3 mb-4">
 
                 <h5 class="fw-bold mb-0">
                     Listado de usuarios
                 </h5>
 
+                <div style="width:100%;max-width:300px;">
+                    <input type="search" class="form-control" placeholder="Buscar usuario..." v-model="busqueda">
+
+                    <small class="text-muted">
+                        {{ total }} usuarios encontrados
+                    </small>
+                </div>
             </div>
 
-            <div class="table-responsive">
+            <!-- CARGANDO -->
+            <div v-if="cargando" class="text-center py-5">
+                Cargando usuarios...
+            </div>
+
+            <!-- TABLA -->
+            <div v-else class="table-responsive">
 
                 <table class="table table-hover align-middle">
 
@@ -60,272 +82,574 @@
 
                     <tbody>
 
-                        @if (!Model.Any())
-                        {
-                            <tr>
-                                <td colspan="5"
-                                    class="text-center py-5">
+                        <tr v-if="usuarios.length === 0">
+                            <td colspan="5" class="text-center py-5">
 
-                                    <div class="fs-1 mb-2">
-                                        👥
-                                    </div>
+                                <div class="fs-1 mb-2">👥</div>
 
-                                    <h6 class="fw-bold">
-                                        No hay usuarios registrados
-                                    </h6>
+                                <h6 class="fw-bold">
+                                    No se encontraron usuarios
+                                </h6>
 
-                                    <p class="text-muted mb-0">
-                                        Creá un usuario para comenzar.
-                                    </p>
+                                <p class="text-muted mb-0">
+                                    Probá otra búsqueda o creá un usuario.
+                                </p>
+                            </td>
+                        </tr>
 
-                                </td>
-                            </tr>
-                        }
-                        else
-                        {
-                            @foreach (var usuario in Model)
-                            {
-                                <tr>
+                        <tr v-for="usuario in usuarios" v-bind:key="usuario.id">
 
-                                    <!-- NOMBRE Y APELLIDO -->
-                                    <td>
-                                        <div class="fw-semibold">
-                                            @usuario.nombre @usuario.apellido
-                                        </div>
-                                    </td>
+                            <!-- NOMBRE -->
+                            <td>
+                                <div class="fw-semibold">
+                                    {{ usuario.nombre }}
+                                    {{ usuario.apellido }}
+                                </div>
+                            </td>
 
-                                    <!-- EMAIL -->
-                                    <td class="text-muted">
-                                        @usuario.email
-                                    </td>
+                            <!-- EMAIL -->
+                            <td class="text-muted">
+                                {{ usuario.email }}
+                            </td>
 
-                                    <!-- ROL -->
-                                    <td>
-                                        @if (usuario.Rol == "Admin")
-                                        {
-                                            <span class="badge bg-primary">
-                                                Administrador
-                                            </span>
-                                        }
-                                        else if (usuario.Rol == "Escuela")
-                                        {
-                                            <span class="badge bg-info text-dark">
-                                                Escuela
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-light text-dark border">
-                                                @usuario.Rol
-                                            </span>
-                                        }
-                                    </td>
+                            <!-- ROL -->
+                            <td>
+                                <span class="badge" v-bind:class="claseRol(usuario.rol)">
 
-                                    <!-- ESTADO -->
-                                    <td>
-                                        @if (usuario.activo)
-                                        {
-                                            <span class="badge bg-success">
-                                                Activo
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-danger">
-                                                Inactivo
-                                            </span>
-                                        }
-                                    </td>
+                                    {{ usuario.rol === 'Admin'
+                                    ? 'Administrador'
+                                    : usuario.rol }}
+                                </span>
+                            </td>
 
-                                    <!-- ACCIONES -->
-                                    <td class="text-end">
+                            <!-- ESTADO -->
+                            <td>
+                                <span class="badge" v-bind:class="usuario.activo
+                                          ? 'bg-success'
+                                          : 'bg-danger'">
 
-                                        <div class="d-flex
-                                                    justify-content-end
-                                                    gap-2">
+                                    {{ usuario.activo
+                                    ? 'Activo'
+                                    : 'Inactivo' }}
+                                </span>
+                            </td>
 
-                                            <a asp-action="Edit"
-                                               asp-route-id="@usuario.id_Usuario"
-                                               class="btn btn-outline-primary btn-sm">
-                                                Editar
-                                            </a>
+                            <!-- ACCIONES -->
+                            <td class="text-end">
 
-                                            @if (usuario.activo)
-                                            {
-                                                <button type="button"
-                                                        class="btn btn-outline-danger btn-sm"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#modalDesactivar-@usuario.id_Usuario">
-                                                    Desactivar
-                                                </button>
-                                            }
-                                            else
-                                            {
-                                                <form asp-action="Reactivar"
-                                                      asp-route-id="@usuario.id_Usuario"
-                                                      method="post"
-                                                      class="d-inline">
+                                <div class="d-flex justify-content-end gap-2">
 
-                                                    @Html.AntiForgeryToken()
+                                    <button type="button" class="btn btn-outline-primary btn-sm"
+                                        v-on:click="abrirEditar(usuario)">
+                                        Editar
+                                    </button>
 
-                                                    <button type="submit"
-                                                            class="btn btn-outline-success btn-sm">
-                                                        Reactivar
-                                                    </button>
+                                    <button v-if="usuario.activo" type="button" class="btn btn-outline-danger btn-sm"
+                                        v-on:click="abrirModalEstado(usuario)">
+                                        Desactivar
+                                    </button>
 
-                                                </form>
-                                            }
+                                    <button v-else type="button" class="btn btn-outline-success btn-sm"
+                                        v-on:click="abrirModalEstado(usuario)">
+                                        Reactivar
+                                    </button>
 
-                                        </div>
-
-                                    </td>
-
-                                </tr>
-                            }
-                        }
+                                </div>
+                            </td>
+                        </tr>
 
                     </tbody>
-
                 </table>
-
             </div>
 
         </div>
-
     </div>
 
-    <!-- PAGINACIÓN DE USUARIOS -->
-    @if (ViewBag.TotalPaginas > 1)
-    {
-        <nav aria-label="Paginación de usuarios"
-             class="mt-4">
+    <!-- PAGINACIÓN -->
+    <nav v-if="totalPaginas > 1" class="mt-4" aria-label="Paginación de usuarios">
 
-            <ul class="pagination justify-content-center">
+        <ul class="pagination justify-content-center">
 
-                <!-- ANTERIOR -->
-                <li class="page-item @(ViewBag.PaginaActual == 1 ? "disabled" : "")">
+            <li class="page-item" v-bind:class="{ disabled: paginaActual <= 1 }">
 
-                    <a class="page-link"
-                       asp-controller="Usuario"
-                       asp-action="Index"
-                       asp-route-pagina="@(ViewBag.PaginaActual - 1)">
-                        Anterior
-                    </a>
+                <button type="button" class="page-link" v-bind:disabled="paginaActual <= 1"
+                    v-on:click="cargarUsuarios(paginaActual - 1)">
+                    Anterior
+                </button>
+            </li>
 
-                </li>
+            <li v-for="numero in totalPaginas" v-bind:key="numero" class="page-item"
+                v-bind:class="{ active: paginaActual === numero }">
 
-                <!-- NÚMEROS DE PÁGINA -->
-                @for (int i = 1; i <= ViewBag.TotalPaginas; i++)
-                {
-                    <li class="page-item @(i == ViewBag.PaginaActual ? "active" : "")">
+                <button type="button" class="page-link" v-on:click="cargarUsuarios(numero)">
+                    {{ numero }}
+                </button>
+            </li>
 
-                        <a class="page-link"
-                           asp-controller="Usuario"
-                           asp-action="Index"
-                           asp-route-pagina="@i">
-                            @i
-                        </a>
+            <li class="page-item" v-bind:class="{ disabled: paginaActual >= totalPaginas }">
 
-                    </li>
-                }
+                <button type="button" class="page-link" v-bind:disabled="paginaActual >= totalPaginas"
+                    v-on:click="cargarUsuarios(paginaActual + 1)">
+                    Siguiente
+                </button>
+            </li>
 
-                <!-- SIGUIENTE -->
-                <li class="page-item @(ViewBag.PaginaActual == ViewBag.TotalPaginas ? "disabled" : "")">
+        </ul>
+    </nav>
 
-                    <a class="page-link"
-                       asp-controller="Usuario"
-                       asp-action="Index"
-                       asp-route-pagina="@(ViewBag.PaginaActual + 1)">
-                        Siguiente
-                    </a>
+    <!-- MODAL PARA CREAR O EDITAR -->
+    <div v-if="mostrarFormulario" class="position-fixed top-0 start-0 w-100 h-100
+                d-flex align-items-center justify-content-center p-3" style="z-index:1055;background:rgba(0,0,0,.65);">
 
-                </li>
+        <div class="card border-0 shadow-lg rounded-4 w-100" style="max-width:550px;max-height:90vh;overflow-y:auto;">
 
-            </ul>
+            <div class="card-body p-4">
 
-        </nav>
-    }
+                <div class="d-flex justify-content-between mb-4">
 
-    <!-- MODALES PARA DESACTIVAR USUARIOS -->
-    @foreach (var usuario in Model.Where(u => u.activo))
-    {
-        <div class="modal fade"
-             id="modalDesactivar-@usuario.id_Usuario"
-             tabindex="-1"
-             aria-labelledby="tituloModal-@usuario.id_Usuario"
-             aria-hidden="true">
+                    <h4 class="fw-bold mb-0">
+                        {{ editando
+                        ? 'Editar usuario'
+                        : 'Nuevo usuario' }}
+                    </h4>
 
-            <div class="modal-dialog modal-dialog-centered">
+                    <button type="button" class="btn-close" v-on:click="cerrarFormulario">
+                    </button>
+                </div>
 
-                <div class="modal-content border-0 rounded-4 shadow">
+                <form v-on:submit.prevent="guardar">
 
-                    <!-- ENCABEZADO -->
-                    <div class="modal-header border-0 pb-0">
+                    <!-- NOMBRE -->
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
 
-                        <h5 class="modal-title fw-bold"
-                            id="tituloModal-@usuario.id_Usuario">
-
-                            Desactivar usuario
-                        </h5>
-
-                        <button type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Cerrar">
-                        </button>
-
+                        <input type="text" class="form-control" v-model.trim="formulario.nombre" required>
                     </div>
 
-                    <!-- MENSAJE -->
-                    <div class="modal-body py-4">
+                    <!-- APELLIDO -->
+                    <div class="mb-3">
+                        <label class="form-label">Apellido</label>
 
-                        <p>
-                            ¿Estás seguro de que querés desactivar
-                            al usuario
-                            <strong>
-                                @usuario.nombre @usuario.apellido
-                            </strong>?
-                        </p>
+                        <input type="text" class="form-control" v-model.trim="formulario.apellido" required>
+                    </div>
 
-                        <div class="alert alert-warning mb-0">
+                    <!-- EMAIL -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Correo electrónico
+                        </label>
 
-                            El usuario permanecerá registrado
-                            en la base de datos y podrá
-                            reactivarse posteriormente.
+                        <input type="email" class="form-control" v-model.trim="formulario.email" required>
+                    </div>
 
+                    <!-- CONTRASEÑA SOLO AL CREAR -->
+                    <div v-if="!editando" class="mb-3">
+
+                        <label class="form-label">Contraseña</label>
+
+                        <input type="password" class="form-control" v-model="formulario.contrasena" minlength="8"
+                            required>
+
+                        <div class="form-text">
+                            Mínimo 8 caracteres.
                         </div>
+                    </div>
 
+                    <!-- ROL -->
+                    <div class="mb-4">
+
+                        <label class="form-label">Rol</label>
+
+                        <select class="form-select" v-model="formulario.rol" required>
+
+                            <option value="Cliente">Cliente</option>
+                            <option value="Escuela">Escuela</option>
+                            <option value="Admin">Administrador</option>
+
+                        </select>
+                    </div>
+
+                    <!-- ERROR -->
+                    <div v-if="errorFormulario" class="alert alert-danger">
+                        {{ errorFormulario }}
                     </div>
 
                     <!-- BOTONES -->
-                    <div class="modal-footer border-0 pt-0">
+                    <div class="d-flex justify-content-end gap-2">
 
-                        <button type="button"
-                                class="btn btn-outline-secondary"
-                                data-bs-dismiss="modal">
-
+                        <button type="button" class="btn btn-outline-secondary" v-on:click="cerrarFormulario">
                             Cancelar
                         </button>
 
-                        <form asp-action="Desactivar"
-                              asp-route-id="@usuario.id_Usuario"
-                              method="post">
+                        <button type="submit" class="btn btn-primary" v-bind:disabled="guardando">
 
-                            @Html.AntiForgeryToken()
-
-                            <button type="submit"
-                                    class="btn btn-danger">
-
-                                Confirmar desactivación
-                            </button>
-
-                        </form>
-
+                            {{ guardando
+                            ? 'Guardando...'
+                            : 'Guardar' }}
+                        </button>
                     </div>
 
-                </div>
+                </form>
             </div>
         </div>
-    }
+    </div>
+
+
+    <!-- MODAL PARA ACTIVAR / DESACTIVAR -->
+    <div class="modal fade" id="modalEstadoUsuario" tabindex="-1" aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">
+                        {{ usuarioSeleccionado?.activo
+                        ? 'Desactivar usuario'
+                        : 'Reactivar usuario' }}
+                    </h5>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar">
+                    </button>
+                </div>
+
+                <div class="modal-body py-4">
+                    <p>
+                        ¿Estás seguro de que querés
+                        {{ usuarioSeleccionado?.activo
+                        ? 'desactivar'
+                        : 'reactivar' }}
+                        al usuario
+
+                        <strong v-if="usuarioSeleccionado">
+                            {{ usuarioSeleccionado.nombre }}
+                            {{ usuarioSeleccionado.apellido }}
+                        </strong>?
+                    </p>
+
+                    <div class="alert mb-0" v-bind:class="usuarioSeleccionado?.activo
+                         ? 'alert-warning'
+                         : 'alert-info'">
+
+                        <template v-if="usuarioSeleccionado?.activo">
+                            El usuario permanecerá registrado
+                            en la base de datos y podrá
+                            reactivarse posteriormente.
+                        </template>
+
+                        <template v-else>
+                            El usuario recuperará su estado activo
+                            y podrá volver a utilizar su cuenta.
+                        </template>
+                    </div>
+
+                    <div v-if="errorFormulario" class="alert alert-danger mt-3 mb-0">
+                        {{ errorFormulario }}
+                    </div>
+                </div>
+
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                        v-bind:disabled="guardando">
+                        Cancelar
+                    </button>
+
+                    <button type="button" class="btn" v-bind:class="usuarioSeleccionado?.activo
+                            ? 'btn-danger'
+                            : 'btn-success'" v-bind:disabled="guardando" v-on:click="confirmarCambioEstado">
+
+                        {{ guardando
+                        ? 'Procesando...'
+                        : usuarioSeleccionado?.activo
+                        ? 'Confirmar desactivación'
+                        : 'Confirmar reactivación' }}
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
 
 </div>
+
+@section Scripts {
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    usuarios: [],
+                    busqueda: '',
+                    paginaActual: 1,
+                    totalPaginas: 0,
+                    total: 0,
+                    cargando: true,
+                    guardando: false,
+                    mostrarFormulario: false,
+                    editando: false,
+                    idEditar: null,
+                    usuarioSeleccionado: null,
+                    mensaje: '',
+                    esError: false,
+                    errorFormulario: '',
+                    temporizadorBusqueda: null,
+                    numeroSolicitud: 0,
+
+                    formulario: {
+                        nombre: '',
+                        apellido: '',
+                        email: '',
+                        contrasena: '',
+                        rol: 'Cliente'
+                    }
+                };
+            },
+
+            watch: {
+                busqueda() {
+                    clearTimeout(this.temporizadorBusqueda);
+
+                    this.temporizadorBusqueda = setTimeout(() => {
+                        this.cargarUsuarios(1);
+                    }, 350);
+                }
+            },
+
+            methods: {
+                claseRol(rol) {
+                    if (rol === 'Admin') return 'bg-primary';
+                    if (rol === 'Escuela') return 'bg-info text-dark';
+
+                    return 'bg-light text-dark border';
+                },
+
+                obtenerToken() {
+                    return document.querySelector(
+                        '#formToken input[name="__RequestVerificationToken"]'
+                    ).value;
+                },
+
+                async cargarUsuarios(pagina = 1) {
+                    const solicitud = ++this.numeroSolicitud;
+                    this.cargando = true;
+
+                    try {
+                        const parametros = new URLSearchParams({
+                            pagina: pagina,
+                            busqueda: this.busqueda
+                        });
+
+                        const respuesta = await fetch(
+                            '@Url.Action("ListarVue", "Usuario")?' +
+                            parametros.toString()
+                        );
+
+                        if (!respuesta.ok) {
+                            throw new Error(
+                                'No se pudieron cargar los usuarios.'
+                            );
+                        }
+
+                        const datos = await respuesta.json();
+
+                        if (solicitud !== this.numeroSolicitud) return;
+
+                        this.usuarios = datos.usuarios ?? [];
+                        this.paginaActual = datos.pagina ?? 1;
+                        this.totalPaginas = datos.totalPaginas ?? 0;
+                        this.total = datos.total ?? 0;
+
+                    } catch (error) {
+                        if (solicitud !== this.numeroSolicitud) return;
+
+                        this.mensaje = error.message;
+                        this.esError = true;
+
+                    } finally {
+                        if (solicitud === this.numeroSolicitud) {
+                            this.cargando = false;
+                        }
+                    }
+                },
+
+                abrirCrear() {
+                    this.editando = false;
+                    this.idEditar = null;
+                    this.errorFormulario = '';
+
+                    this.formulario = {
+                        nombre: '',
+                        apellido: '',
+                        email: '',
+                        contrasena: '',
+                        rol: 'Cliente'
+                    };
+
+                    this.mostrarFormulario = true;
+                },
+
+                abrirEditar(usuario) {
+                    this.editando = true;
+                    this.idEditar = usuario.id;
+                    this.errorFormulario = '';
+
+                    this.formulario = {
+                        nombre: usuario.nombre,
+                        apellido: usuario.apellido,
+                        email: usuario.email,
+                        contrasena: '',
+                        rol: usuario.rol
+                    };
+
+                    this.mostrarFormulario = true;
+                },
+
+                cerrarFormulario() {
+                    if (this.guardando) return;
+
+                    this.mostrarFormulario = false;
+                },
+
+                abrirModalEstado(usuario) {
+                    this.usuarioSeleccionado = usuario;
+                    this.errorFormulario = '';
+                    this.mensaje = '';
+
+                    const elemento = document.getElementById('modalEstadoUsuario');
+                    const modal = bootstrap.Modal.getOrCreateInstance(elemento);
+
+                    modal.show();
+                },
+
+                async enviar(url, datos = null) {
+                    const opciones = {
+                        method: 'POST',
+                        headers: {
+                            'RequestVerificationToken': this.obtenerToken()
+                        }
+                    };
+
+                    if (datos !== null) {
+                        opciones.headers['Content-Type'] = 'application/json';
+                        opciones.body = JSON.stringify(datos);
+                    }
+
+                    const respuesta = await fetch(url, opciones);
+
+                    let resultado;
+
+                    try {
+                        resultado = await respuesta.json();
+                    } catch {
+                        throw new Error(
+                            'El servidor no devolvió una respuesta válida.'
+                        );
+                    }
+
+                    if (!respuesta.ok) {
+                        throw new Error(
+                            resultado.mensaje || 'Ocurrió un error.'
+                        );
+                    }
+
+                    return resultado;
+                },
+
+                async guardar() {
+                    if (this.guardando) return;
+
+                    this.guardando = true;
+                    this.errorFormulario = '';
+
+                    try {
+                        const datos = {
+                            nombre: this.formulario.nombre,
+                            apellido: this.formulario.apellido,
+                            email: this.formulario.email,
+                            rol: this.formulario.rol
+                        };
+
+                        let url;
+
+                        if (this.editando) {
+                            url = '@Url.Action("EditarVue", "Usuario")' +
+                                '?id=' + encodeURIComponent(this.idEditar);
+                        } else {
+                            url = '@Url.Action("CrearVue", "Usuario")';
+                            datos.contrasena = this.formulario.contrasena;
+                        }
+
+                        const resultado = await this.enviar(url, datos);
+
+                        this.mostrarFormulario = false;
+                        this.mensaje = resultado.mensaje;
+                        this.esError = false;
+
+                        await this.cargarUsuarios(
+                            this.editando ? this.paginaActual : 1
+                        );
+
+                    } catch (error) {
+                        this.errorFormulario = error.message;
+
+                    } finally {
+                        this.guardando = false;
+                    }
+                },
+
+                
+                async confirmarCambioEstado() {
+                    if (!this.usuarioSeleccionado || this.guardando) {
+                        return;
+                    }
+
+                    this.guardando = true;
+                    this.errorFormulario = '';
+
+                    try {
+                        const activar = !this.usuarioSeleccionado.activo;
+
+                        const urlBase = activar
+                            ? '@Url.Action("ReactivarVue", "Usuario")'
+                            : '@Url.Action("DesactivarVue", "Usuario")';
+
+                        const url = urlBase +
+                            '?id=' + encodeURIComponent(this.usuarioSeleccionado.id);
+
+                        const resultado = await this.enviar(url);
+
+                        const elemento = document.getElementById('modalEstadoUsuario');
+                        const modal = bootstrap.Modal.getInstance(elemento);
+
+                        if (modal) {
+                            modal.hide();
+                        }
+
+                        this.mensaje = resultado.mensaje;
+                        this.esError = false;
+
+                        await this.cargarUsuarios(this.paginaActual);
+
+                        this.usuarioSeleccionado = null;
+
+                    } catch (error) {
+                        this.errorFormulario = error.message;
+
+                    } finally {
+                        this.guardando = false;
+                    }
+                }
+            }, // Cierre de methods
+
+            mounted() {
+                this.cargarUsuarios(1);
+            },
+
+            beforeUnmount() {
+                clearTimeout(this.temporizadorBusqueda);
+            }
+
+        }).mount('#appUsuarios');
+    </script>
+}
