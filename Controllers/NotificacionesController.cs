@@ -22,9 +22,9 @@ namespace CentroDeCopias.Controllers
                 ClaimTypes.NameIdentifier)!);
 
         // GET: Notificaciones
-        public async Task<IActionResult> Index(int pagina = 1)
+        public async Task<IActionResult> Index(int pagina = 10)
         {
-            const int tamanoPagina = 1;
+            const int tamanoPagina = 10;
 
             if (pagina < 1)
                 pagina = 1;

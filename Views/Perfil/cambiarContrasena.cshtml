@@ -1,0 +1,52 @@
+
+<form asp-controller="Perfil"
+      asp-action="CambiarContrasena"
+      method="post">
+
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label for="nuevaContrasena" class="form-label">
+            Nueva contraseña
+        </label>
+
+        <input type="password"
+               id="nuevaContrasena"
+               name="nuevaContrasena"
+               class="form-control"
+               minlength="8"
+               autocomplete="new-password"
+               required />
+
+        <small class="text-muted">
+            Mínimo 8 caracteres.
+        </small>
+    </div>
+
+    <div class="mb-4">
+        <label for="confirmarContrasena" class="form-label">
+            Confirmar nueva contraseña
+        </label>
+
+        <input type="password"
+               id="confirmarContrasena"
+               name="confirmarContrasena"
+               class="form-control"
+               minlength="8"
+               autocomplete="new-password"
+               required />
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+            Guardar contraseña
+        </button>
+
+        <a asp-controller="Perfil"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+            Cancelar
+        </a>
+    </div>
+
+</form>

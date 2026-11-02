@@ -6,6 +6,7 @@ using System.Security.Claims;
 using CentroDeCopias.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 
 namespace CentroDeCopias.Controllers
 {
@@ -260,6 +261,89 @@ namespace CentroDeCopias.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: Perfil/CambiarContrasena
+        [HttpGet]
+        public IActionResult CambiarContrasena()
+        {
+            return View();
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CambiarContrasena(
+            string nuevaContrasena,
+            string confirmarContrasena)
+        {
+            // Obtener usuario autenticado
+            var idClaim = User.FindFirst(
+                ClaimTypes.NameIdentifier)?.Value;
+
+            if (!int.TryParse(idClaim, out int idUsuario))
+                return Challenge();
+
+            var usuario = await _context.Usuarios
+                .FirstOrDefaultAsync(u =>
+                    u.id_Usuario == idUsuario && u.activo);
+
+            if (usuario == null)
+                return Forbid();
+
+            // Validar campos
+            if (string.IsNullOrWhiteSpace(nuevaContrasena) ||
+                string.IsNullOrWhiteSpace(confirmarContrasena))
+            {
+                TempData["Error"] = "Completá todos los campos.";
+                return RedirectToAction(nameof(CambiarContrasena));
+            }
+
+            if (nuevaContrasena.Length < 8)
+            {
+                TempData["Error"] =
+                    "La contraseña debe tener al menos 8 caracteres.";
+
+                return RedirectToAction(nameof(CambiarContrasena));
+            }
+
+            if (nuevaContrasena != confirmarContrasena)
+            {
+                TempData["Error"] =
+                    "Las contraseñas no coinciden.";
+
+                return RedirectToAction(nameof(CambiarContrasena));
+            }
+
+            var hasher = new PasswordHasher<Usuario>();
+
+            // Comprobar que no sea la misma contraseña
+            var resultado = hasher.VerifyHashedPassword(
+                usuario,
+                usuario.contrasena,
+                nuevaContrasena);
+
+            if (resultado != PasswordVerificationResult.Failed)
+            {
+                TempData["Error"] =
+                    "La nueva contraseña debe ser diferente de la anterior.";
+
+                return RedirectToAction(nameof(CambiarContrasena));
+            }
+
+            // Guardar el nuevo hash
+            usuario.contrasena = hasher.HashPassword(
+                usuario,
+                nuevaContrasena);
+
+            await _context.SaveChangesAsync();
+
+            TempData["Mensaje"] =
+                "Contraseña actualizada correctamente.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
 
 
     }

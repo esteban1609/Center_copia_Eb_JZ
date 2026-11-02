@@ -30,16 +30,16 @@
                 @if (!string.IsNullOrEmpty(Model.Avatar))
                 {
                     <img src="@Model.Avatar" alt="Foto de perfil" class="rounded-circle" style="width: 120px;
-                                    height: 120px;
-                                    object-fit: cover;" />
+                                        height: 120px;
+                                        object-fit: cover;" />
                 }
                 else
                 {
                     <div class="rounded-circle bg-secondary
-                                    d-flex align-items-center
-                                    justify-content-center" style="width: 120px;
-                                    height: 120px;
-                                    flex-shrink: 0;">
+                                        d-flex align-items-center
+                                        justify-content-center" style="width: 120px;
+                                        height: 120px;
+                                        flex-shrink: 0;">
 
                         <span class="text-white" style="font-size: 55px;">
                             👤
@@ -239,6 +239,25 @@
                 </div>
 
             </div>
+
+            <!-- boton Cambiar Contraseña-->
+            <div class="mb-4">
+
+                <h4 class="mb-3">Seguridad de la cuenta</h4>
+
+                <p class="text-muted">
+                    Podés cambiar tu contraseña para mantener
+                    tu cuenta protegida.
+                </p>
+
+                <a asp-controller="Perfil" asp-action="CambiarContrasena" class="btn btn-outline-primary">
+
+                    <i class="bi bi-lock me-2"></i>
+                    Cambiar contraseña
+                </a>
+
+            </div>
+
 
             <hr class="my-4" />
 
