@@ -20,6 +20,15 @@
 
     </div>
 
+        @if (User.IsInRole("Escuela"))
+    {
+        <div class="alert alert-success">
+            🎓 Por ser Escuela tenés un
+            <strong>@((CentroDeCopias.Models.Precios.DescuentoEscuela * 100).ToString("0"))% de descuento</strong>
+            en impresiones, anillados y productos.
+        </div>
+    }
+
     <!-- TARJETA PRINCIPAL -->
     <div class="card shadow-sm border-0 rounded-4">
 
@@ -230,22 +239,11 @@
                                 Tipo de anillado
                             </label>
 
-                            <select id="anillado"
-                                    name="anillado"
-                                    class="form-select">
-
-                                <option value="Ninguno">
-                                    Sin anillado
-                                </option>
-
-                                <option value="Simple">
-                                    Anillado simple
-                                </option>
-
-                                <option value="Doble">
-                                    Anillado doble
-                                </option>
-
+                            <select id="anillado" name="anillado" class="form-select">
+                                <option value="Ninguno">Sin anillado</option>
+                                <option value="Chico">Anillado chico ($1.500)</option>
+                                <option value="Mediano">Anillado mediano ($2.500)</option>
+                                <option value="Grande">Anillado grande ($4.000)</option>
                             </select>
 
                         </div>

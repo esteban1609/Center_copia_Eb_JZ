@@ -64,7 +64,7 @@ namespace CentroDeCopias.Controllers
             var detalleExistente = await _context.DetallesPedido
                 .FirstOrDefaultAsync(d => d.id_pedido == pedido.id_pedido && d.id_producto == idProducto);
 
-            decimal subtotal = producto.Precio * cantidad;
+            decimal subtotal = Precios.AplicarDescuento(producto.Precio * cantidad, User.IsInRole("Escuela"));
 
             if (detalleExistente != null)
             {

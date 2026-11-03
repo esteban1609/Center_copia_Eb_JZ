@@ -27,22 +27,7 @@ namespace CentroDeCopias.Controllers
         {
             return View();
         }
-        private decimal CalcularPrecioImpresion(int paginas, int copias, bool color, bool dobleFaz)
-        {
-            int hojasPorCopia = dobleFaz ? (int)Math.Ceiling(paginas / 2.0) : paginas;
-            int hojasTotales = hojasPorCopia * copias;
-
-            decimal precioPorHoja;
-
-            if (hojasTotales <= 20)
-                precioPorHoja = color ? 100 : 80;
-            else if (hojasTotales <= 100)
-                precioPorHoja = color ? 70 : 60;
-            else
-                precioPorHoja = color ? 50 : 40;
-
-            return precioPorHoja * hojasTotales;
-        }
+        
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -106,7 +91,8 @@ namespace CentroDeCopias.Controllers
             int paginas = ContarPaginas(rutaFisica);
 
             // TODO: definir precio real según copias/color/tamaño/doble faz
-            decimal precio = CalcularPrecioImpresion(paginas, copias, color, dobleFaz);
+           decimal precio = Precios.CalcularImpresion(
+            paginas, copias, color, dobleFaz, anillado, User.IsInRole("Escuela"));
 
             var documento = new Documento
             {

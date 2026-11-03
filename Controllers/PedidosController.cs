@@ -342,7 +342,7 @@ namespace CentroDeCopias.Controllers
             pedido.total -= detalle.precio;
 
             detalle.cantidad = cantidad;
-            detalle.precio = precioUnitario * cantidad;
+            detalle.precio = Precios.AplicarDescuento(precioUnitario * cantidad, User.IsInRole("Escuela"));
 
             pedido.total += detalle.precio;
             await _context.SaveChangesAsync();
