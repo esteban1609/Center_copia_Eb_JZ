@@ -41,9 +41,7 @@ namespace CentroDeCopias.Controllers
             int sinLeer = await query.CountAsync(n => !n.Leida);
 
             // Calcular total de páginas
-            int totalPaginas = (int)Math.Ceiling(
-                totalNotificaciones / (double)tamanoPagina
-            );
+            int totalPaginas = (int)Math.Ceiling(totalNotificaciones / (double)tamanoPagina);
 
             // Evitar páginas fuera del rango
             if (totalPaginas > 0 && pagina > totalPaginas)
@@ -74,9 +72,7 @@ namespace CentroDeCopias.Controllers
         public async Task<IActionResult> MarcarLeida(int id)
         {
             var notificacion = await _context.Notificaciones
-                .FirstOrDefaultAsync(n =>
-                    n.IdNotificacion == id &&
-                    n.id_Usuario == UsuarioActualId);
+                .FirstOrDefaultAsync(n =>n.IdNotificacion == id &&n.id_Usuario == UsuarioActualId);
 
             if (notificacion == null)
                 return NotFound();
@@ -94,9 +90,7 @@ namespace CentroDeCopias.Controllers
         public async Task<IActionResult> MarcarTodasLeidas()
         {
             var notificaciones = await _context.Notificaciones
-                .Where(n =>
-                    n.id_Usuario == UsuarioActualId &&
-                    !n.Leida)
+                .Where(n =>n.id_Usuario == UsuarioActualId &&!n.Leida)
                 .ToListAsync();
 
             foreach (var notificacion in notificaciones)
@@ -113,9 +107,7 @@ namespace CentroDeCopias.Controllers
         public async Task<IActionResult> IrAPedido(int id)
         {
             var notificacion = await _context.Notificaciones
-                .FirstOrDefaultAsync(n =>
-                    n.IdNotificacion == id &&
-                    n.id_Usuario == UsuarioActualId);
+                .FirstOrDefaultAsync(n =>n.IdNotificacion == id && n.id_Usuario == UsuarioActualId);
 
             if (notificacion == null)
                 return NotFound();
@@ -124,8 +116,7 @@ namespace CentroDeCopias.Controllers
                 return RedirectToAction(nameof(Index));
 
             var pedido = await _context.Pedidos
-                .FirstOrDefaultAsync(p =>
-                    p.id_pedido == notificacion.id_pedido);
+                .FirstOrDefaultAsync(p =>p.id_pedido == notificacion.id_pedido);
 
             if (pedido == null)
                 return NotFound();
@@ -139,10 +130,7 @@ namespace CentroDeCopias.Controllers
             notificacion.Leida = true;
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(
-                "Details",
-                "Pedidos",
-                new { id = pedido.id_pedido });
+            return RedirectToAction("Details","Pedidos",new { id = pedido.id_pedido });
         }
     }
 }

@@ -28,15 +28,13 @@ namespace CentroDeCopias.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var idClaim = User.FindFirst(
-                ClaimTypes.NameIdentifier)?.Value;
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (!int.TryParse(idClaim, out int idUsuario))
                 return Challenge();
 
             var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(u =>
-                    u.id_Usuario == idUsuario && u.activo);
+                .FirstOrDefaultAsync(u =>u.id_Usuario == idUsuario && u.activo);
 
             if (usuario == null)
                 return Forbid();
@@ -49,8 +47,7 @@ namespace CentroDeCopias.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SubirAvatar(IFormFile? archivo)
         {
-            var idClaim = User.FindFirst(
-                ClaimTypes.NameIdentifier)?.Value;
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (!int.TryParse(idClaim, out int idUsuario))
                 return Challenge();
@@ -77,33 +74,15 @@ namespace CentroDeCopias.Controllers
             }
 
             // Validar el contenido real de la imagen.
-            // No confiamos en la extensión enviada por el navegador.
-            string? extension = null;
 
-            using (var stream = archivo.OpenReadStream())
+            string extension = Path.GetExtension(archivo.FileName).ToLower();
+
+            if (extension != ".jpg" &&
+                extension != ".png")
             {
-                byte[] encabezado = new byte[12];
-                int leidos = await stream.ReadAsync(
-                    encabezado.AsMemory(0, encabezado.Length));
-
-                if (leidos >= 3 &&
-                    encabezado[0] == 0xFF &&
-                    encabezado[1] == 0xD8 &&
-                    encabezado[2] == 0xFF)
-                {
-                    extension = ".jpg";
-                }
-                else if (leidos >= 8 &&
-                    encabezado.Take(8).SequenceEqual(
-                        new byte[]
-                        {
-                            137, 80, 78, 71, 13, 10, 26, 10
-                        }))
-                {
-                    extension = ".png";
-                }
+                TempData["Error"] = "Solo se permiten imágenes JPG o PNG.";
+                return RedirectToAction(nameof(Index));
             }
-
             if (extension == null)
             {
                 TempData["Error"] = "Solo se permiten imágenes JPG, PNG.";
@@ -121,8 +100,7 @@ namespace CentroDeCopias.Controllers
             string rutaFisica = Path.Combine(carpeta, nombreArchivo);
 
             // Guardar imagen físicamente
-            using (var stream = new FileStream(
-                rutaFisica, FileMode.CreateNew))
+            using (var stream = new FileStream(rutaFisica, FileMode.CreateNew))
             {
                 await archivo.CopyToAsync(stream);
             }
@@ -169,18 +147,13 @@ namespace CentroDeCopias.Controllers
             ));
 
             // Crear una nueva identidad con las Claims actualizadas
-            var identidad = new ClaimsIdentity(
-                claims,
-                CookieAuthenticationDefaults.AuthenticationScheme
-            );
+            var identidad = new ClaimsIdentity(claims,CookieAuthenticationDefaults.AuthenticationScheme);
 
             // Crear el principal
             var principal = new ClaimsPrincipal(identidad);
 
             // Actualizar la cookie de autenticación
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                principal
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,principal
             );
 
             TempData["Mensaje"] = "Foto de perfil actualizada correctamente.";
@@ -198,8 +171,7 @@ namespace CentroDeCopias.Controllers
             string apellido)
         {
             // Obtener el ID del usuario autenticado
-            var idClaim = User.FindFirst(
-                ClaimTypes.NameIdentifier)?.Value;
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (!int.TryParse(idClaim, out int idUsuario))
                 return Challenge();
@@ -217,7 +189,7 @@ namespace CentroDeCopias.Controllers
             apellido = apellido?.Trim() ?? "";
 
             // Validar campos obligatorios
-            if (string.IsNullOrWhiteSpace(nombre) ||
+            if (string.IsNullOrWhiteSpace(nombre) || 
                 string.IsNullOrWhiteSpace(apellido))
             {
                 TempData["Error"] = "El nombre y apellido son obligatorios.";
@@ -242,22 +214,15 @@ namespace CentroDeCopias.Controllers
                 .Where(c => c.Type != ClaimTypes.Name)
                 .ToList();
 
-            claims.Add(new Claim(
-                ClaimTypes.Name,
-                usuario.nombre + " " + usuario.apellido));
+            claims.Add(new Claim(ClaimTypes.Name,usuario.nombre + " " + usuario.apellido));
 
-            var identidad = new ClaimsIdentity(
-                claims,
-                CookieAuthenticationDefaults.AuthenticationScheme);
+            var identidad = new ClaimsIdentity(claims,CookieAuthenticationDefaults.AuthenticationScheme);
 
             var principal = new ClaimsPrincipal(identidad);
 
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                principal);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,principal);
 
-            TempData["Mensaje"] =
-                "Información personal actualizada correctamente.";
+            TempData["Mensaje"] ="Información personal actualizada correctamente.";
 
             return RedirectToAction(nameof(Index));
         }
@@ -278,15 +243,12 @@ namespace CentroDeCopias.Controllers
             string confirmarContrasena)
         {
             // Obtener usuario autenticado
-            var idClaim = User.FindFirst(
-                ClaimTypes.NameIdentifier)?.Value;
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (!int.TryParse(idClaim, out int idUsuario))
                 return Challenge();
 
-            var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(u =>
-                    u.id_Usuario == idUsuario && u.activo);
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u =>u.id_Usuario == idUsuario && u.activo);
 
             if (usuario == null)
                 return Forbid();
@@ -301,16 +263,14 @@ namespace CentroDeCopias.Controllers
 
             if (nuevaContrasena.Length < 8)
             {
-                TempData["Error"] =
-                    "La contraseña debe tener al menos 8 caracteres.";
+                TempData["Error"] ="La contraseña debe tener al menos 8 caracteres.";
 
                 return RedirectToAction(nameof(CambiarContrasena));
             }
 
             if (nuevaContrasena != confirmarContrasena)
             {
-                TempData["Error"] =
-                    "Las contraseñas no coinciden.";
+                TempData["Error"] ="Las contraseñas no coinciden.";
 
                 return RedirectToAction(nameof(CambiarContrasena));
             }
@@ -318,28 +278,21 @@ namespace CentroDeCopias.Controllers
             var hasher = new PasswordHasher<Usuario>();
 
             // Comprobar que no sea la misma contraseña
-            var resultado = hasher.VerifyHashedPassword(
-                usuario,
-                usuario.contrasena,
-                nuevaContrasena);
+            var resultado = hasher.VerifyHashedPassword(usuario,usuario.contrasena,nuevaContrasena);
 
             if (resultado != PasswordVerificationResult.Failed)
             {
-                TempData["Error"] =
-                    "La nueva contraseña debe ser diferente de la anterior.";
+                TempData["Error"] ="La nueva contraseña debe ser diferente de la anterior.";
 
                 return RedirectToAction(nameof(CambiarContrasena));
             }
 
             // Guardar el nuevo hash
-            usuario.contrasena = hasher.HashPassword(
-                usuario,
-                nuevaContrasena);
+            usuario.contrasena = hasher.HashPassword(usuario,nuevaContrasena);
 
             await _context.SaveChangesAsync();
 
-            TempData["Mensaje"] =
-                "Contraseña actualizada correctamente.";
+            TempData["Mensaje"] ="Contraseña actualizada correctamente.";
 
             return RedirectToAction(nameof(Index));
         }

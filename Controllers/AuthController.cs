@@ -32,21 +32,17 @@ namespace CentroDeCopias.Controllers
             [Bind("nombre,apellido,email,contrasena,Rol")] Usuario datos)
         {
             // Solo se permiten Cliente y Escuela
-            if (datos.Rol != "Cliente" &&
-                datos.Rol != "Escuela")
+            if (datos.Rol != "Cliente" && datos.Rol != "Escuela")
             {
-                ModelState.AddModelError(
-                    "Rol", "Seleccione un tipo de cuenta válido");
+                ModelState.AddModelError("Rol", "Seleccione un tipo de cuenta válido");
             }
 
             // Verificar que el correo no exista
-            bool existe = await _context.Usuarios.AnyAsync(
-                u => u.email == datos.email);
+            bool existe = await _context.Usuarios.AnyAsync(u => u.email == datos.email);
 
             if (existe)
             {
-                ModelState.AddModelError(
-                    "email", "Este correo ya está registrado");
+                ModelState.AddModelError("email", "Este correo ya está registrado");
             }
 
             if (!ModelState.IsValid)
@@ -67,14 +63,12 @@ namespace CentroDeCopias.Controllers
             // Guardamos un hash, no la contraseña original
             var hasher = new PasswordHasher<Usuario>();
 
-            usuario.contrasena = hasher.HashPassword(
-                usuario, datos.contrasena);
+            usuario.contrasena = hasher.HashPassword(usuario, datos.contrasena);
 
             _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
 
-            TempData["Mensaje"] =
-                "Cuenta creada correctamente. Ya podés iniciar sesión.";
+            TempData["Mensaje"] ="Cuenta creada correctamente. Ya podés iniciar sesión.";
 
             return RedirectToAction("Index", "Home");
         }
@@ -102,15 +96,11 @@ namespace CentroDeCopias.Controllers
             }
 
             // Buscar usuario por email
-            var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.email == datos.email);
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.email == datos.email);
 
             if (usuario == null)
             {
-                ModelState.AddModelError(
-                    "",
-                    "Correo o contraseña incorrectos"
-                );
+                ModelState.AddModelError("","Correo o contraseña incorrectos");
 
                 return View(datos);
             }
@@ -124,14 +114,9 @@ namespace CentroDeCopias.Controllers
                 datos.contrasena
             );
 
-            if (resultado == PasswordVerificationResult.Failed ||
-                !usuario.activo)
+            if (resultado == PasswordVerificationResult.Failed ||!usuario.activo)
             {
-                ModelState.AddModelError(
-                    "",
-                    "Correo o contraseña incorrectos"
-                );
-
+                ModelState.AddModelError("","Correo o contraseña incorrectos");
                 return View(datos);
             }
 
@@ -165,19 +150,13 @@ namespace CentroDeCopias.Controllers
 };
 
             // Crear la identidad
-            var identidad = new ClaimsIdentity(
-                claims,
-                CookieAuthenticationDefaults.AuthenticationScheme
-            );
+            var identidad = new ClaimsIdentity(claims,CookieAuthenticationDefaults.AuthenticationScheme);
 
             // Crear el principal
             var principal = new ClaimsPrincipal(identidad);
 
             // Iniciar sesión
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                principal
-            );
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,principal);
 
             return RedirectToAction("Index", "Home");
         }
@@ -187,9 +166,7 @@ namespace CentroDeCopias.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme
-            );
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             return RedirectToAction("Login", "Auth");
         }

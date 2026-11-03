@@ -87,10 +87,7 @@ namespace CentroDeCopias.Controllers
                 // Encriptamos la contraseña mediante un hash seguro
                 var hasher = new PasswordHasher<Usuario>();
 
-                usuario.contrasena = hasher.HashPassword(
-                    usuario,
-                    usuario.contrasena
-                );
+                usuario.contrasena = hasher.HashPassword(usuario,usuario.contrasena);
 
                 usuario.activo = true;
 
@@ -146,17 +143,11 @@ namespace CentroDeCopias.Controllers
             }
 
             // Verificar que el email no pertenezca a otro usuario
-            bool emailExiste = await _context.Usuarios.AnyAsync(
-                u => u.email == datos.email &&
-                     u.id_Usuario != id
-            );
+            bool emailExiste = await _context.Usuarios.AnyAsync(u => u.email == datos.email &&u.id_Usuario != id);
 
             if (emailExiste)
             {
-                ModelState.AddModelError(
-                    "email",
-                    "Este correo ya está registrado"
-                );
+                ModelState.AddModelError("email", "Este correo ya está registrado");
             }
 
             if (ModelState.IsValid)
@@ -222,8 +213,7 @@ namespace CentroDeCopias.Controllers
         
         // LISTADO PARA VUE: AJAX + JSON + PAGINACIÓN
         [HttpGet]
-        public async Task<IActionResult> ListarVue(
-            int pagina = 1, string busqueda = "")
+        public async Task<IActionResult> ListarVue(int pagina = 1, string busqueda = "")
         {
             const int tamanoPagina = 10;
             pagina = Math.Max(1, pagina);
@@ -274,8 +264,7 @@ namespace CentroDeCopias.Controllers
         // ALTA DE USUARIO DESDE VUE
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CrearVue(
-            [FromBody] Usuario datos)
+        public async Task<IActionResult> CrearVue([FromBody] Usuario datos)
         {
             if (datos == null)
                 return BadRequest(new
@@ -348,8 +337,7 @@ namespace CentroDeCopias.Controllers
         // MODIFICACIÓN DESDE VUE
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditarVue(
-            int id, [FromBody] Usuario datos)
+        public async Task<IActionResult> EditarVue(int id, [FromBody] Usuario datos)
         {
             if (datos == null)
                 return BadRequest(new
@@ -398,9 +386,7 @@ namespace CentroDeCopias.Controllers
                 });
             }
 
-            bool emailExiste = await _context.Usuarios.AnyAsync(u =>
-                u.id_Usuario != id &&
-                u.email.ToLower() == email.ToLower());
+            bool emailExiste = await _context.Usuarios.AnyAsync(u =>u.id_Usuario != id &&u.email.ToLower() == email.ToLower());
 
             if (emailExiste)
                 return BadRequest(new
