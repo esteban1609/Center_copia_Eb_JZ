@@ -215,7 +215,7 @@ namespace CentroDeCopias.Controllers
         [HttpGet]
         public async Task<IActionResult> ListarVue(int pagina = 1, string busqueda = "")
         {
-            const int tamanoPagina = 10;
+            const int tamanoPagina = 4;
             pagina = Math.Max(1, pagina);
             busqueda = (busqueda ?? "").Trim();
 
@@ -240,7 +240,7 @@ namespace CentroDeCopias.Controllers
                 .ThenBy(u => u.nombre)
                 .ThenBy(u => u.id_Usuario)
                 .Skip((pagina - 1) * tamanoPagina)
-                .Take(tamanoPagina)
+                .Take(tamanoPagina) 
                 .Select(u => new
                 {
                     id = u.id_Usuario,

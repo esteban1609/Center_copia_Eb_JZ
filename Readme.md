@@ -118,3 +118,16 @@ classDiagram
 - **Productos → Detalle_Pedido (1 a N):** un mismo producto puede aparecer en muchas líneas de distintos pedidos.
 - **Documentos → Detalle_Pedido (1 a N):** un mismo documento puede imprimirse en más de un pedido (por ejemplo, si el cliente pide copias adicionales más adelante).
 - **Productos → Stock (1 a 1):** cada producto tiene un único registro de stock asociado, que se actualiza con cada venta.
+
+
+## 📋 Tabla de Evidencias
+
+| Requerimiento Mínimo | Estado | Enlace al Código / Controladores | Evidencia (Captura / GIF / Video) |
+|---|---|---|---|
+| **1. 4 Tablas y Relación 1:N** | ✅ Cumplido | [DataContext.cs](Models/DataContext.cs#L25-L100) (6 tablas; relaciones 1:N: Usuario→Pedido, Usuario→Documento, Pedido→DetallePedido, Pedido→Documento, Producto→DetallePedido) | [Diagrama DER](docs/der.png) |
+| **2. Login, Roles y Avatar** | ✅ Cumplido | [perfilController.cs](Controllers/perfilController.cs#45-162) |[Perfil](docs/perfil.png) |
+| **3. Manejo de Archivos (Extra)** | ✅ Cumplido | [DocumentosController.cs](Controllers/DocumentoController.cs#L34-L61) (pdf a imprimir)  |  [subida de archivos](docs/manejoDeArchivos.mp4) |
+| **4. ABM en Vue.js + AJAX** | ✅ Cumplido | [UsuarioController.cs](Controllers/UsuarioController.cs#L214-L483) | [ABM en Vue.js](docs/ABM_Vue.mp4)
+| **5. Paginado por Servidor** |✅ Cumplido | [PedidosController.cs](Controllers/PedidosController.cs#23-58) | [Paginacion](docs/paginacion.png) |
+| **6. Selección Asíncrona (AJAX)** | ✅ Cumplido | [StockController.cs](Controllers/StockController.cs#L77-L101) | [Seleccion Asincrona](docs/SeleccionAsincronica.mp4)
+| **7. Web API + JWT** | ✅ Cumplido | [AuthApiController.cs](Api/AuthApiController.cs#28-150), [ProductosApiControler.cs](Api/ProductosApiController.cs#L24-L244) | [AuthApi](docs/postmann.png) [ProductosApi](docs/postmann2.png)|
